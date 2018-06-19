@@ -25,6 +25,6 @@ Four workflow scripts are provided to demonstrate processing for four examples o
 4. `Workflow_Example4.R`: Irregular domain with river network
 
 ### References
-+ Barnes, R., C. Lehman, and D. Mulla, Priority-flood: `An optimal depression-filling and watershed-labeling algorithm for digital elevation models`. Computers & Geosciences, 2014. 62: p. 117-127.
-+ Wang, L. and H. Liu, `An efficient method for identifying and filling surface depressions in digital elevation models for hydrologic analysis and modelling`. International Journal of Geographical Information Science, 2006. 20(2): p. 193-213.
-+ Zhou, G., Z. Sun, and S. Fu, An efficient variant of the `Priority-Flood algorithm for filling depressions in raster digital elevation models`. Computers & Geosciences, 2016. 90: p. 87-96.
++ Barnes, R., C. Lehman, and D. Mulla, Priority-flood: An optimal depression-filling and watershed-labeling algorithm for digital elevation models. Computers & Geosciences, 2014. 62: p. 117-127.
++ Wang, L. and H. Liu, An efficient method for identifying and filling surface depressions in digital elevation models for hydrologic analysis and modelling. International Journal of Geographical Information Science, 2006. 20(2): p. 193-213.
++ Zhou, G., Z. Sun, and S. Fu, An efficient variant of the Priority-Flood algorithm for filling depressions in raster digital elevation models. Computers & Geosciences, 2016. 90: p. 87-96.
