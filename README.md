@@ -13,7 +13,7 @@ The slope function `Slope_Calc_Upwind.R` calculates slopes in the x and y direct
 
 For more advanced processing there are the following options (refer to the function for details on how to implement flags):
 + Maximum slope threshold: A maximum absolute value slope can be set.
-+ Scaling secondary flow directions: By default slopes are calculated in the x and y direction. Using the flow direction file which is produced in the DEM processing step, the slope perpendicular to the primary flow direction can be scaled to some fraction of the primary flow direction. If the fraction is set to 0 this will result in slope files with only slopes in x or y for a given cell (similar to previous GRASS processing approaches).
++ Scaling secondary flow directions: By default slopes are calculated in the x and y direction. Using the flow direction file which is produced in the DEM processing step, the slope perpendicular to the primary flow direction can be scaled so that they do not exceed some fraction of the primary flow direction. If the fraction is set to 0 this will result in slope files with only slopes in x or y for a given cell (similar to previous GRASS processing approaches).
 + Enforcing primary flow directions along river cells: The flow scaling applied above occurs over the entire domain. In addition, if a mask of river cells is applied one scaling value can be applied to the rest of the domain while flow in the primary directions is enforced along the specified river cells (i.e. applying a scaling ratio of 0 for river cells).
 + Border cells: By default all border cells are processed to point out. An optional border direction mask can be input to set some borders to point in (Note where overland flow occurs rivers will still be pointed out).
 
