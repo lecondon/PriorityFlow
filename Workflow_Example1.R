@@ -17,7 +17,7 @@ source("./functions/Get_Border.R")
 
 ##########################################
 # Read in Inputs
-# The DEM should be formated as a matrix with the same 
+# The DEM should be formated as a matrix with the same
 # dimensions as the domain
 dem=matrix(scan("dem_test.txt"), ncol=215, byrow=T)
 ny=nrow(dem)
@@ -37,7 +37,7 @@ image.plot(demT)
 #1. Initialize queue
 init=InitQueue(demT) #using the rectangular boundary
 #2. Process DEM
-travHS=D4TraverseB(demT, init$queue, init$marked, basins=init$basins, epsilon=0.01) 
+travHS=D4TraverseB(demT, init$queue, init$marked, basins=init$basins, epsilon=0.01)
 
 #Look at the outputs
 ls(travHS) #to see a list of everything that comes out of the processing
@@ -55,11 +55,11 @@ image(travHS$basins) # The resulting drainage basins
 #In this example secondary slope scaling is turned on and the secondary
 #Slopes are set to a maximum of 0.1*primary flow direction
 #To calculate only slopes in the primary flow direction set the secondaryTH to 0
-slopesUW=SlopeCalcUP(dem=travHS$dem, direction=travHS$direction, dx=1000, dy=1000, scalesecond=T, secondaryTH=0.1) 
+slopesUW=SlopeCalcUP(dem=travHS$dem, direction=travHS$direction, dx=1000, dy=1000, scalesecond=T, secondaryTH=0.1)
 
 
-#Option 2: If you would like to scale the secondary slopes differently for 
-#Hillslopes than for rivers 
+#Option 2: If you would like to scale the secondary slopes differently for
+#Hillslopes than for rivers
 #Make a mask of cells with drainage area greater than some threshold to define as the rivers (you could also input your own river mask here)
 area=drainageArea(travHS$direction, printflag=T) #rectangular boundary
 image.plot(area)
@@ -69,7 +69,7 @@ rivers[area<rth]=0
 rivers[area>=rth]=1
 image.plot(rivers) #Plot to check that the threshold is good
 
-slopesUW=SlopeCalcUP(dem=travHS$dem, direction=travHS$direction, dx=1000, dy=1000, borderdir=1, scalesecond=T, secondaryTH=0.1, rivermask=rivers) 
+slopesUW=SlopeCalcUP(dem=travHS$dem, direction=travHS$direction, dx=1000, dy=1000, borderdir=1, scalesecond=T, secondaryTH=0.1, rivermask=rivers)
 
 
 #Look at the slopes and directions
@@ -102,7 +102,7 @@ write.table( t(c(nx,ny,1)), fout, append=F, row.names=F, col.names=F)
 write.table(slopeUWy, fout, append=T, row.names=F, col.names=F)
 
 ##########################################
-#Example writing out other variables as matrices 
-write.table( t(travHS$direction[,ny:1]) ,"direction.out.test.txt", row.names=F, col.names=F)
+#Example writing out other variables as matrices
+write.table( t(slopesUW$direction[,ny:1]) ,"direction.out.test.txt", row.names=F, col.names=F)
 write.table( t(travHS$dem[,ny:1]) ,"dem.out.test.txt", row.names=F, col.names=F)
 write.table( t(area[,ny:1]) ,"area.out.test.txt", row.names=F, col.names=F)

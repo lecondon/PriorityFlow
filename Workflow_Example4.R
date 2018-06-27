@@ -1,7 +1,7 @@
 # Workflow Example 4: Irregular domain with a river mask
 # This example walks through a case where
-# you have an irregular domain and a pre-defined river network to 
-# be used for the DEM processing 
+# you have an irregular domain and a pre-defined river network to
+# be used for the DEM processing
 # This requires two inputs: (1) a DEM  (2) a mask of the domain and (3) a river mask
 
 ##########################################
@@ -18,7 +18,7 @@ source("./functions/Get_Border.R")
 
 ##########################################
 # Inputs
-# The DEM and mask should be formated as a matrices with the same 
+# The DEM and mask should be formated as a matrices with the same
 # dimensions as the domain (i.e. ncol=nx, nrow=ny)
 # The river and domain masks should consist of 0's and 1's with 1's for any grid cell on the river network or inside the domain respectively
 dem=matrix(scan("dem_test.txt"), ncol=215, byrow=T)
@@ -35,23 +35,23 @@ domainmaskT=t(domainmask[ny:1,])
 rivermaskT=rivermaskT*domainmaskT #clipping the river mask to the domain mask
 
 #check that you aren't upside down and backwards somehow...
-#if you've formatted your input correctly this should look 
+#if you've formatted your input correctly this should look
 #like your domain without any additional transforming
 image.plot(demT)
 image.plot(rivermaskT)
 image.plot(domainmaskT)
 
 ##########################################
-# Process the DEM: 
+# Process the DEM:
 #1. Initialize the queue with river cells that fall on the border
 #2. Traverse the stream network filling sinks and stair stepping around D8 neigbhors
 #3. Look for orphan branches and continue processing until they are all connected
-#4. Use the processed river cells as the intialize a new queue 
+#4. Use the processed river cells as the intialize a new queue
 #5. process hillslopes from there
 ep=0.01 #epsilon to add to flat cell
 
 #1.initialize the queue with river cells that fall on the border
-init=InitQueue(demT,  initmask=rivermaskT, domainmask=domainmaskT) 
+init=InitQueue(demT,  initmask=rivermaskT, domainmask=domainmaskT)
 
 #2.take a first pass at traversing the streams
 trav1=StreamTraverse(demT, mask=rivermaskT, init$queue, init$marked, basins=init$basins, printstep=F, epsilon=ep)
@@ -70,7 +70,7 @@ while(norphan>0){
 	orphan=FindOrphan(trav1$dem, rivermaskT, trav1$marked)
 	norphan=orphan$norphan
 	print(paste("lap", lap, norphan, "orphans found"))
-	
+
 	#go around again if orphans are found
 	if(norphan>0){
 		trav2 = StreamTraverse(trav1$dem, mask=rivermaskT, queue=orphan$queue, marked=trav1$marked, step=trav1$step, direction=trav1$direction, basins=trav1$basins, printstep=F, epsilon=ep)
@@ -91,7 +91,7 @@ image(trav1$marked)
 #to do this use the marked rivers from the last step plus the edge cells
 #as the boundary and the mask
 borderT=GetBorder(domainmaskT)
-RivBorder=borderT+trav1$marked 
+RivBorder=borderT+trav1$marked
 RivBorder[RivBorder>1]=1
 image(RivBorder)
 init=InitQueue(trav1$dem,  border=RivBorder)
@@ -115,9 +115,9 @@ image(trav1$marked,zlim=c(0.5,1), col=maskcol(2), add=T)
 #In this example secondary slope scaling is turned on and the secondary
 #Slopes are set to a maximum of 0.1*primary flow direction
 #To calculate only slopes in the primary flow direction set the secondaryTH to 0
-slopesUW=SlopeCalcUP(dem=travHS$dem, direction=travHS$direction, dx=1000, dy=1000, scalesecond=T, secondaryTH=0.1, mask=domainmaskT) 
+slopesUW=SlopeCalcUP(dem=travHS$dem, direction=travHS$direction, dx=1000, dy=1000, scalesecond=T, secondaryTH=0.1, mask=domainmaskT)
 
-#Option 2: If you would like to scale the secondary slopes differently for hillslopes than for rivers 
+#Option 2: If you would like to scale the secondary slopes differently for hillslopes than for rivers
 #Make a mask of cells with drainage area greater than some threshold to define as the rivers (you could also use the original river mask here)
 area=drainageArea(travHS$direction, mask=domainmaskT, printflag=T) #rectangular boundary
 image.plot(area)
@@ -127,7 +127,7 @@ rivers[area<rth]=0
 rivers[area>=rth]=1
 image.plot(rivers) #Plot to check that the threshold is good
 
-slopesUW=SlopeCalcUP(dem=travHS$dem, mask=domainmaskT, direction=travHS$direction, dx=1000, dy=1000, scalesecond=T, secondaryTH=0.1, rivermask=rivers) 
+slopesUW=SlopeCalcUP(dem=travHS$dem, mask=domainmaskT, direction=travHS$direction, dx=1000, dy=1000, scalesecond=T, secondaryTH=0.1, rivermask=rivers)
 
 
 #Look at the slopes and directions
@@ -138,7 +138,7 @@ image.plot(slopesUW$direction)
 
 ##########################################
 # Calculate the drainage area
-area=drainageArea(slopesUW$direction, mask=domainmaskT, printflag=T) 
+area=drainageArea(slopesUW$direction, mask=domainmaskT, printflag=T)
 image.plot(area)
 
 ##########################################
@@ -162,10 +162,7 @@ write.table(slopeUWy, fout, append=T, row.names=F, col.names=F)
 
 
 ##########################################
-#Example writing out other variables as matrices 
-write.table( t(travHS$direction[,ny:1]) ,"direction.out.test.txt", row.names=F, col.names=F)
+#Example writing out other variables as matrices
+write.table( t(slopesUW$direction[,ny:1]) ,"direction.out.test.txt", row.names=F, col.names=F)
 write.table( t(travHS$dem[,ny:1]) ,"dem.out.test.txt", row.names=F, col.names=F)
 write.table( t(area[,ny:1]) ,"area.out.test.txt", row.names=F, col.names=F)
-
-
-

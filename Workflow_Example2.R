@@ -17,11 +17,11 @@ source("./functions/Get_Border.R")
 
 ##########################################
 # Inputs
-# The DEM and mask should be formated as a matrices with the same 
+# The DEM and mask should be formated as a matrices with the same
 # dimensions as the domain (i.e. ncol=nx, nrow=ny)
 # The mask should consist of 0's and 1's with 1's for any grid cell within the domain
 dem=matrix(scan("dem_test.txt"), ncol=215, byrow=T)
-domainmask=matrix(scan("mask_test.txt"), ncol=215, byrow=T) 
+domainmask=matrix(scan("mask_test.txt"), ncol=215, byrow=T)
 
 ny=nrow(dem)
 nx=ncol(dem)
@@ -30,21 +30,21 @@ demT=t(dem[ny:1,])
 domainmaskT=t(domainmask[ny:1,])
 
 #check that you aren't upside down and backwards somehow...
-#if you've formatted your input correctly this should look 
+#if you've formatted your input correctly this should look
 #like your domain without any additional transforming
 image.plot(demT)
 image.plot(domainmaskT)
 
 
 ##########################################
-# Process the DEM: 
+# Process the DEM:
 #1. initialize the queue with all the border cells for the irrgular boundary
 #2. Process the DEM so that all cells drain to the borders
 
 #1. Initialize queue
 init=InitQueue(demT, domainmask=domainmaskT) #using the rectangular boundary
 #2. Process DEM
-travHS=D4TraverseB(demT, init$queue, init$marked, basins=init$basins, epsilon=0.01, mask=domainmaskT) 
+travHS=D4TraverseB(demT, init$queue, init$marked, basins=init$basins, epsilon=0.01, mask=domainmaskT)
 
 #Look at the outputs
 ls(travHS) #to see a list of everything that comes out of the processing
@@ -63,7 +63,7 @@ image(travHS$basins) # The resulting drainage basins
 #In this example secondary slope scaling is turned on and the secondary
 #Slopes are set to a maximum of 0.1*primary flow direction
 #To calculate only slopes in the primary flow direction set the secondaryTH to 0
-slopesUW=SlopeCalcUP(dem=travHS$dem, direction=travHS$direction, dx=1000, dy=1000, scalesecond=T, secondaryTH=0.1, mask=domainmaskT) 
+slopesUW=SlopeCalcUP(dem=travHS$dem, direction=travHS$direction, dx=1000, dy=1000, scalesecond=T, secondaryTH=0.1, mask=domainmaskT)
 
 
 #Option 2: If you would like to scale the secondary slopes differently for hillslopes than for rivers 
@@ -76,7 +76,7 @@ rivers[area<rth]=0
 rivers[area>=rth]=1
 image.plot(rivers) #Plot to check that the threshold is good
 
-slopesUW=SlopeCalcUP(dem=travHS$dem, mask=domainmaskT, direction=travHS$direction, dx=1000, dy=1000, scalesecond=T, secondaryTH=0.1, rivermask=rivers) 
+slopesUW=SlopeCalcUP(dem=travHS$dem, mask=domainmaskT, direction=travHS$direction, dx=1000, dy=1000, scalesecond=T, secondaryTH=0.1, rivermask=rivers)
 
 
 #Look at the slopes and directions
@@ -87,7 +87,7 @@ image.plot(slopesUW$direction)
 
 ##########################################
 # Calculate the drainage area
-area=drainageArea(slopesUW$direction, mask=domainmaskT, printflag=T) 
+area=drainageArea(slopesUW$direction, mask=domainmaskT, printflag=T)
 image.plot(area)
 
 ##########################################
@@ -110,7 +110,7 @@ write.table( t(c(nx,ny,1)), fout, append=F, row.names=F, col.names=F)
 write.table(slopeUWy, fout, append=T, row.names=F, col.names=F)
 
 ##########################################
-#Example writing out other variables as matrices 
-write.table( t(travHS$direction[,ny:1]) ,"direction.out.test.txt", row.names=F, col.names=F)
+#Example writing out other variables as matrices
+write.table( t(slopesUW$direction[,ny:1]) ,"direction.out.test.txt", row.names=F, col.names=F)
 write.table( t(travHS$dem[,ny:1]) ,"dem.out.test.txt", row.names=F, col.names=F)
 write.table( t(area[,ny:1]) ,"area.out.test.txt", row.names=F, col.names=F)
