@@ -417,7 +417,7 @@ if(nflat!=0){
 	flatloc=which(slopex2==0 & slopey2==0, arr.ind=T)
 	flatlist=which(slopex2==0 & slopey2==0)
 	print("Flat locations (note this is x,y)")
-	#print(flatloc)
+	print(flatloc)
 	#impose a minimum slope in the primary direction for flat cells
 	for(i in 1:nflat){
 		dtemp=direction[flatlist[i]]
