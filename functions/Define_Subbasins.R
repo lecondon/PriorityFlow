@@ -48,7 +48,7 @@ kd[,2]=c(-1,0,1,0)
 rivers=area
 rivers[area<riv_th]=0
 rivers[area>=riv_th]=1
-image.plot(rivers)
+#image.plot(rivers)
 
 #make masks of which cells drain down, up, left right
 down=up=left=right=matrix(0, nrow=nx, ncol=ny) 
@@ -68,18 +68,17 @@ draincount[2:nx, ]=draincount[2:nx,]+right[1:(nx-1),]*rivers[1:(nx-1),]
 headwater=matrix(0, nrow=nx, ncol=ny)
 headwater[which(draincount==0 & rivers==1)]=1
 
-image.plot(headwater*3+draincount, zlim=c(0.5,3))
+#image.plot(headwater*3+draincount, zlim=c(0.5,3))
 
 #give values outside the mask and on the border a negative count so they aren't processed
 marked[which(mask==0)]=1
-
 
 #start with all the headwater cells (i.e. cells with zero upstream neigbors)
 blist=cbind(which(headwater==1), which(headwater==1, arr.ind=T))
 nheadwater=nrow(blist)
 #marked[qlist]=1
 #subbasin[blist[,1]]=1:nrow(blist) #initialized the subbasin numbers
-image.plot(headwater)
+#image.plot(headwater)
 
 #Get just the river areas to use for this
 rivarea=area*rivers
@@ -120,7 +119,7 @@ for(i in 1:nheadwater){
 			marked[xds,yds]=1
 			xtemp=xds
 			ytemp=yds
-			print(paste(xtemp,ytemp, index))
+			#print(paste(xtemp,ytemp, index))
 		} else{
 			#if the downstream neighbor has been processed then move on to the next headwater cell
 			#print("Alredy Marked")
@@ -175,10 +174,11 @@ while(nqueue>0){
 			} # end if its in the domain bounds
 		} #end direction loop
 	}	
-
-	queue=queue2	
-	nqueue=nrow(queue)
-	ii=ii+1
+	if(length(queue2)>=2){
+		queue=queue2	
+		nqueue=nrow(queue)
+		ii=ii+1
+	} else{nqueue=0}
 }	
 
 #test=rivers
