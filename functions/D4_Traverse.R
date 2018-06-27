@@ -52,7 +52,7 @@ if(nqueue>nchunk){
 	th=queue2[1,3]
 	nqueue2=length(queue2)/3
 	nqueue=nrow(queue1)
-	print(paste('inital queue:', nrow(queue), "splitting. Q1=", nqueue, "Q2=", nqueue2))
+	if(printstep){print(paste('inital queue:', nrow(queue), "splitting. Q1=", nqueue, "Q2=", nqueue2))}
 	#adding the matrix step so it doesn't become a vector if its only one
 	if(nqueue2==1){
 		queue2=matrix(queue2, ncol=3,byrow=T)
@@ -149,7 +149,7 @@ if(nqueue>1){
 	if(nqueuetemp>nchunk){
 		t1=proc.time()
 		split=split+1
-		print(paste('Split:', split, 'Q2', nqueuetemp,  'nstep=', nstep, "Q1 Max:", q1max, "time", round((t1-t0)[3],2)))
+		if(printstep){print(paste('P', split, 'Q2', nqueuetemp,  'nstep=', nstep, "Q1 Max:", q1max, "time", round((t1-t0)[3],2)))}
 		queue2=rbind(queue2,queuetemp)
 		queuetemp=NULL
 		qsort=queue2[order(queue2[,3]),]
@@ -163,7 +163,7 @@ if(nqueue>1){
 		
 	} else if(nqueuetemp<=nchunk & nqueue2 >0){
 		split=split+1
-		print(paste('Split:', split, 'Q2', nqueuetemp,  'taking last chunk, nstep=', nstep, "Q1 Max:", q1max))
+		if(printstep){print(paste('Split:', split, 'Q2', nqueuetemp,  'taking last chunk, nstep=', nstep, "Q1 Max:", q1max))}
 		queue1=rbind(queue2, queuetemp)
 		queuetemp=NULL
 		queue2=NULL
@@ -172,7 +172,7 @@ if(nqueue>1){
 		q1max=0
 		nqueue2=0
 	} else {
-		print(paste('Q1 depleted, Q2', nqueue2,  'done!!'))
+		if(printstep){print(paste('Q1 depleted, Q2', nqueue2,  'done!!'))}
 		nqueue=0
 	}
 }

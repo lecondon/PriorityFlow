@@ -107,7 +107,7 @@ while(nqueue>0){
 		blist=blist[-ilist,]
 	} else{
 		blist=NULL
-		print("blist empty")
+		if(printflag){print("blist empty")}
 	}
 	
 	nqueue=length(queue)/2

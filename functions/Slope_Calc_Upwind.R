@@ -70,7 +70,7 @@ slopey1[,ny]=slopey1[,(ny-1)]
 slopex2=slopex1
 slopey2=slopey1
 for(j in 2:(ny-1)){
-	print(j)
+	#print(j)
 	for(i in 2:(nx-1)){	
 		#print(i)
 		if(mask[i,j]==1 & borders[i,j]==0){
