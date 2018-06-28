@@ -1,6 +1,7 @@
-subbasins=function(direction, area, mask, d4=c(1,2,3,4), riv_th=50, printflag=F){
+CalcSubbasins=function(direction, area, mask, d4=c(1,2,3,4), riv_th=50, printflag=F){
 #function to divide the domain into subbasins with individual stream segments
 
+print(riv_th)
 #Mandatory Inputs:
 # 1. direction: numerical matrix of d4 flow directions
 # 2. area: drainage areas for every cell  
@@ -48,6 +49,7 @@ kd[,2]=c(-1,0,1,0)
 rivers=area
 rivers[area<riv_th]=0
 rivers[area>=riv_th]=1
+print(sum(rivers))
 #image.plot(rivers)
 
 #make masks of which cells drain down, up, left right

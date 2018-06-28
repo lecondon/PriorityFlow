@@ -1,4 +1,4 @@
-SlopeCalcUP=function(dem, direction, dx, dy,  mask, borders, borderdir=1, minslope=1e-5,  d4=c(1,2,3,4),  cutmax=F, maxTH=0.5, scalesecond=F, secondaryTH=0.5, rivermask){
+SlopeCalcUP=function(dem, direction, dx, dy,  mask, borders, borderdir=1, minslope=1e-5,  d4=c(1,2,3,4),  cutmax=F, maxTH=0.5, scalesecond=F, secondaryTH=0.5, river_method=0, rivermask, subbasins){
 
 #Mandatory Inputs:
 # dem - matrix of elevation values
@@ -23,8 +23,15 @@ SlopeCalcUP=function(dem, direction, dx, dy,  mask, borders, borderdir=1, minslo
 # secondary threshold - maximum ratio of |secondary|/|primary| to be enforced. 
 #NOTE - this scaling occurs after any max threholds are applied
 
+#rivermethod- Optional method to treat river cells differently from the rest of the domain 
+	# 0: default value, no special treatment for river cells
+	# 1: Scale secondary slopes to zero along the river (requries river mask)
+	# 2: Apply watershed mean slope to each river reach (requires river mask and subbasins)
+	# 3: Apply the stream mean slope to each reach (requires river mask and subbasins)
+	#NOTE: the river mask can be different from the rivers that were used to create the subbasins if desired (i.e. if you want to use a threshold of 100 to create subbasins but then apply to river cells with a threshold of 50)
+
 #rivermask - Mask with 1 for river cells and 0 for other cells
-# if a river mask is provided then the secondary slopes are zeroed out for  these cells
+
 
 ###############################################################
 ny=ncol(dem)
@@ -344,7 +351,11 @@ uplist=which(direction==d4[3])
 rightlist=which(direction==d4[4])
 ylist=c(uplist, downlist) #list of cells with primary flow in the x direction
 xlist=c(rightlist, leftlist) #list of cells with primary flow in the y direction
-
+ymask=xmask=matrix(0, nrow=nx, ncol=ny)#mask of cells with primary flow in x and y direction, signs indicate direction
+ymask[downlist]=1
+ymask[uplist]=-1
+xmask[leftlist]=1
+xmask[rightlist]=-1
 
 ###################################
 #If an upper limit on slopes is set (i.e. cutmax==T)
@@ -392,22 +403,56 @@ if(scalesecond==T){
 }
 
 ###################################
-#If you want to turn off secondary flow completely within some river mask
-if(missing(rivermask)){
-	print("No rivermask provided")
-}else{
-	print("Removing secondary slopes along river mask")
-	#zero out the slopes in the secondary directions over the whole domain
-	xtemp=slopex2
-	xtemp[ylist]=0
-	ytemp=slopey2
-	ytemp[xlist]=0
+#Separate processing for the river cells
+#Option 1: Just turn off secondary slopes in the river cells
+if(river_method==1){
+	if(missing(rivermask)){
+		print("WARNING: No rivermask provided, slopes not adjusted")
+	}else{
+		print("Removing secondary slopes along river mask")
+		#zero out the slopes in the secondary directions over the whole domain
+		xtemp=slopex2
+		xtemp[ylist]=0
+		ytemp=slopey2
+		ytemp[xlist]=0
 	
-	#merge in these slopes over the river mask
-	rivlist=which(rivermask==1)
-	slopex2[rivlist]=xtemp[rivlist]
-	slopey2[rivlist]=ytemp[rivlist]
+		#merge in these slopes over the river mask
+		rivlist=which(rivermask==1)
+		slopex2[rivlist]=xtemp[rivlist]
+		slopey2[rivlist]=ytemp[rivlist]
 }
+}
+
+# Option 2: Assigne the subbasin mean slope to the river cells in the primary direciton and set the secondary direction to 0
+if(river_method==2){
+	nbasin=max(subbasins)
+	savg=rep(0,nbasin)
+	count=rep(0,nbasin)
+	#calculate the subbasin average slope
+	#NEED to sort out for x list and ylist so just averaging the primary
+	for(i in 1:nx){
+		for(j in 1:ny){
+			if(subbasins[i,j]>0){
+				savg[subbasins[i,j]]=savg[subbasins[i,j]]+abs(slopex2[i,j])*abs(xmask[i,j])+abs(slopey2[i,j])*abs(ymask[i,j])
+				count[subbasins[i,j]]=count[subbasins[i,j]] + 1
+			} #end if
+		} #end for j
+	}#end for i
+	savg=savg/count
+	
+	rivlist=which(rivermask==1)
+	nriv=length(rivlist)
+	#fill in the river slopes with the average for their subbasin
+	for(i in 1:nriv){
+		rtemp=rivlist[i]
+		sbtemp=subbasins[rtemp]
+		#print(paste(i, rtemp, sbtemp))
+		if(sbtemp>0){
+			slopex2[rtemp]=savg[sbtemp]*xmask[rtemp]
+			slopey2[rtemp]=savg[sbtemp]*ymask[rtemp]
+		} #end if
+	}#end for i in 1:nriv	
+} # end if river method ==2
 
 ###################################
 #Check for flat cells
@@ -441,12 +486,3 @@ output_list=list("slopex"=slopex2, "slopey"=slopey2, "direction"=direction)
 return(output_list)
 
 } # end function
-
-
-
-
-
-
-
-
-
