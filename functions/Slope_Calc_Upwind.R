@@ -409,6 +409,7 @@ if(river_method==1){
 	if(missing(rivermask)){
 		print("WARNING: No rivermask provided, slopes not adjusted")
 	}else{
+		print("River Method 1: setting secondary slopes to zero along the river")
 		print("Removing secondary slopes along river mask")
 		#zero out the slopes in the secondary directions over the whole domain
 		xtemp=slopex2
@@ -423,8 +424,9 @@ if(river_method==1){
 }
 }
 
-# Option 2: Assigne the subbasin mean slope to the river cells in the primary direciton and set the secondary direction to 0
+# Option 2: Assign the subbasin mean slope to the river cells in the primary direciton and set the secondary direction to 0
 if(river_method==2){
+	print("River Method 2: assigning average watershed slope to river cells by watershed")
 	nbasin=max(subbasins)
 	savg=rep(0,nbasin)
 	count=rep(0,nbasin)
@@ -453,6 +455,38 @@ if(river_method==2){
 		} #end if
 	}#end for i in 1:nriv	
 } # end if river method ==2
+
+# Option 3: Assign the subbasin mean river slope to the river cells in the primary direciton and set the secondary direction to 0
+if(river_method==3){
+	print("River Method 3: assigning average river slope to river cells by watershed")
+	nbasin=max(subbasins)
+	savg=rep(0,nbasin)
+	count=rep(0,nbasin)
+	#calculate the subbasin average slope
+	#NEED to sort out for x list and ylist so just averaging the primary
+	for(i in 1:nx){
+		for(j in 1:ny){
+			if(subbasins[i,j]>0 & rivermask[i,j]==1){
+				savg[subbasins[i,j]]=savg[subbasins[i,j]]+abs(slopex2[i,j])*abs(xmask[i,j])+abs(slopey2[i,j])*abs(ymask[i,j])
+				count[subbasins[i,j]]=count[subbasins[i,j]] + 1
+			} #end if
+		} #end for j
+	}#end for i
+	savg=savg/count
+	
+	rivlist=which(rivermask==1)
+	nriv=length(rivlist)
+	#fill in the river slopes with the average for their subbasin
+	for(i in 1:nriv){
+		rtemp=rivlist[i]
+		sbtemp=subbasins[rtemp]
+		#print(paste(i, rtemp, sbtemp))
+		if(sbtemp>0){
+			slopex2[rtemp]=savg[sbtemp]*xmask[rtemp]
+			slopey2[rtemp]=savg[sbtemp]*ymask[rtemp]
+		} #end if
+	}#end for i in 1:nriv	
+} # end if river method ==3
 
 ###################################
 #Check for flat cells
