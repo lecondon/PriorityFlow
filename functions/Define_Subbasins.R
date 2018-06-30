@@ -1,7 +1,6 @@
-CalcSubbasins=function(direction, area, mask, d4=c(1,2,3,4), riv_th=50, printflag=F){
+CalcSubbasins=function(direction, area, mask, d4=c(1,2,3,4), riv_th=50, printflag=F, merge_th=0){
 #function to divide the domain into subbasins with individual stream segments
 
-print(riv_th)
 #Mandatory Inputs:
 # 1. direction: numerical matrix of d4 flow directions
 # 2. area: drainage areas for every cell  
@@ -12,6 +11,7 @@ print(riv_th)
 #   defaults to: 1,2,3,4
 # 2. mask: Mask with ones for cells to be processed and zeros for everything else - defaults to a mask of all 1's
 # 3. riv_th= threshold for the drainage area minimum used desigate cells as river cells, defaults to 50
+# 4. merge_th=after all the subbasins have been defined subbasins with areas <merg_th will be combined with their downstream neighbors (Defaults to 0 which means no merging will take place)
 
 nx=nrow(direction)
 ny=ncol(direction)
@@ -49,7 +49,7 @@ kd[,2]=c(-1,0,1,0)
 rivers=area
 rivers[area<riv_th]=0
 rivers[area>=riv_th]=1
-print(sum(rivers))
+#print(sum(rivers))
 #image.plot(rivers)
 
 #make masks of which cells drain down, up, left right
@@ -70,14 +70,17 @@ draincount[2:nx, ]=draincount[2:nx,]+right[1:(nx-1),]*rivers[1:(nx-1),]
 headwater=matrix(0, nrow=nx, ncol=ny)
 headwater[which(draincount==0 & rivers==1)]=1
 
-#image.plot(headwater*3+draincount, zlim=c(0.5,3))
+#image.plot(headwater*3+draincount, zlim=c(0.5,4))
 
 #give values outside the mask and on the border a negative count so they aren't processed
 marked[which(mask==0)]=1
 
+
 #start with all the headwater cells (i.e. cells with zero upstream neigbors)
 blist=cbind(which(headwater==1), which(headwater==1, arr.ind=T))
 nheadwater=nrow(blist)
+ends=rivers
+ends[blist[,1]]=2
 #marked[qlist]=1
 #subbasin[blist[,1]]=1:nrow(blist) #initialized the subbasin numbers
 #image.plot(headwater)
@@ -89,6 +92,9 @@ index=0
 #subbasin[blist[1,1]]=index 
 #marked[blist[1,1]]=1
 
+subbasin=matrix(0, nrow=nx, ncol=ny)
+marked=matrix(0, nrow=nx, ncol=ny)
+first=T
 ###1. walk down from every headwater marking stream segments
 for(i in 1:nheadwater){
 	xtemp=blist[i,2]
@@ -97,9 +103,9 @@ for(i in 1:nheadwater){
 	index=index+1
 	subbasin[xtemp,ytemp]=index
 	marked[xtemp,ytemp]=1
-	#print(paste("Starting new Branch", i,  index))
+	#print(paste("Starting new Branch", i,  index, subbasin[xtemp,ytemp]))
 	#image.plot(subbasin)
-
+	summarytemp=c(index, xtemp, ytemp, rep(0,4))
 	
 	while(active==T){
 		#get the direction and find downstream cell
@@ -114,9 +120,26 @@ for(i in 1:nheadwater){
 			accum=area[xds,yds]-area[xtemp, ytemp]
 		
 			#if there is a tributary coming in then start a new segment
-			if(accum>riv_th){index=index+1}
+			if(accum>riv_th){
+				#print('Here')
+				summarytemp[4:5]=c(xtemp,ytemp)
+				summarytemp[6]=index+1		
+				index=index+1
+				ends[xtemp,ytemp]=3
+				ends[xds,yds]=2
+				if(first==T){
+					summary=summarytemp
+					first=F
+				}else{
+					summary=rbind(summary, summarytemp)
+				}
+				summarytemp=c(index, xtemp, ytemp, rep(0,4))
+
+				#print(paste("new index", index))
+			}
 		
 			#assign subbasin number to the downstream cell and mark it off
+			#print("step")
 			subbasin[xds,yds]=index
 			marked[xds,yds]=1
 			xtemp=xds
@@ -126,14 +149,27 @@ for(i in 1:nheadwater){
 			#if the downstream neighbor has been processed then move on to the next headwater cell
 			#print("Alredy Marked")
 			active=FALSE
+			ends[xtemp,ytemp]=3
+			summarytemp[4:5]=c(xtemp,ytemp)
+			summarytemp[6]=subbasin[xds,yds]
 		} #end else
 	 } else{
 	 	#print("Outside the domain")
 		active=FALSE
+		ends[xtemp,ytemp]=3
+		summarytemp[4:5]=c(xtemp,ytemp)
+		summarytemp[6]=-1
 	 }
 	} # end while
+	if(first==T){
+		summary=summarytemp
+		first=F
+	}else{
+		summary=rbind(summary, summarytemp)
+	}
 } # end for
-
+rownames(summary)=NULL
+colnames(summary)=c("Basin_ID","start_x","start_y", "end_x", "end_y", "Downstream_Basin_ID", "Area")
 
 #image.plot(subbasin, zlim=c(17,18))
 #image.plot(marked)
@@ -142,7 +178,7 @@ for(i in 1:nheadwater){
 #range(test)
 
 
-###2. Get the drainage bains for every segement
+###2. Get the drainage basins for every segement
 subbasinA=subbasin
 
 #start a queue with all the cells in the river
@@ -151,6 +187,7 @@ qlist=which(subbasin>0)
 blist=cbind(which(subbasin>0), which(subbasin>0, arr.ind=T))
 
 nqueue=nrow(queue)
+count0=0
 ii=1
 while(nqueue>0){
 	if(printflag){print(paste("lap", ii, "ncell", nqueue))}
@@ -158,9 +195,11 @@ while(nqueue>0){
 	
 	#loop through the queue
 	for(i in 1:nqueue){
-		#look downstream add 1 to the area and subtract 1 from the drainage #
 		xtemp=queue[i,1]
 		ytemp=queue[i,2]
+		#add one to the subbasin area for the summary
+		sbtemp=subbasinA[xtemp,ytemp]
+		summary[sbtemp,7]=summary[sbtemp,7]+1 
 		
 		#look for cells that drain to this cell
 		for(d in 1:4){
@@ -169,8 +208,8 @@ while(nqueue>0){
 			if(xus*yus>0 & xus<=nx & yus<=ny){
 				if(mask[xus,yus]==1 & subbasinA[xus,yus]==0){
 					if(direction[xus,yus]==d4[d]){
-						subbasinA[xus,yus]=subbasinA[xtemp,ytemp]
-						queue2=rbind(queue2, c(xus,yus))
+						subbasinA[xus,yus]=subbasinA[xtemp,ytemp] #assign the subbasin number to the upstream cell
+						queue2=rbind(queue2, c(xus,yus)) #add to the queue
 					} #end if pointing to cell
 				} #end if its on the mask
 			} # end if its in the domain bounds
@@ -182,6 +221,29 @@ while(nqueue>0){
 		ii=ii+1
 	} else{nqueue=0}
 }	
+
+
+# ###3. if merge_th >0 look for basins with areas less than the merge threshold, that don't drain to the  and merge with their downstream neighbors
+# ## STill under construction
+# if(merge_th>0){
+	# small_list=which(summary[,7]<merge_th & summary[,6]>0)
+	# nsmall=length(small_list)
+	# dsmerge=rep(0, nrow(summary)) #array to sort the downstream basins to merge
+	# areatemp=summary[,7]
+	# while(nsmall>0){
+		# #loop through and record the downstream subbasin ID for every subbasin
+		# for(i in 1:nsmall){
+			# sb_index=which(summary[,1]==small_list[i])
+			# dsmerge[sb_index]=summary[sb_index,6] #get the downstream subbasin ID
+			# ds_index=which(summary[,1]==small_list[i])
+			# areatemp[d]
+		# } #end for i
+	# }# end while
+	
+	
+#}#end if
+
+
 
 #test=rivers
 #test[test==0]=NA
