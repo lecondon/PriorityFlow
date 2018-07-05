@@ -20,13 +20,13 @@ source("./functions/Define_Subbasins.R")
 #Settings
 #Settings for the slope processing to change
 
-#DEM processing 
+#DEM processing
 ep=0.01 #The epsilon value applied to flat cells
 
 #Slope scaling
 maxslope=0.5	#maximum slope (slopes with absolute value greater than this will be set to minslope), set to -1 if you don't want to set a threshold
 minslope=1e-5	#minimum slope (slopes with absolute value less than this will be set to minslope), set to -1 if you don't want to set a threshold
-scale=0.1 #The maximum ratio of secondary to primary flow directions (set to -1 if you don't want the secondary slopes to be scaled, set to 0 if you want only primary flow directios) 
+scale=0.1 #The maximum ratio of secondary to primary flow directions (set to -1 if you don't want the secondary slopes to be scaled, set to 0 if you want only primary flow directios)
 
 #River and subbasin size for slope calculations
 sub_th=100 #area threshold to use for subbasin delineation
@@ -84,24 +84,24 @@ image(travHS$basins) # The resulting drainage basins
 #Slopes in the secondary direction are set to a maximum of 0.1*primary flow direction
 #To calculate only slopes in the primary flow direction set the secondaryTH to 0
 #Additionally primary slopes are limited by min slope and max slope thresholds
-slopesUW=SlopeCalcUP(dem=travHS$dem, direction=travHS$direction, dx=dx, dy=dy,  secondaryTH=0.1, maxslope=maxslope, minslope=minslope)
+slopesUW=SlopeCalcUP(dem=travHS$dem, direction=travHS$direction, dx=dx, dy=dy,  secondaryTH=scale, maxslope=maxslope, minslope=minslope)
 
 
 ### Option 2: If you would like to handle river cells differently from the rest of the domain
 
 #do a preliminary slope calc just to get the flow directions on the boundary fixed
-slopesUW=SlopeCalcUP(dem=travHS$dem, direction=travHS$direction, dx=dx, dy=dy,  secondaryTH=0.1, maxslope=maxslope, minslope=minslope)
+slopesUW=SlopeCalcUP(dem=travHS$dem, direction=travHS$direction, dx=dx, dy=dy,  secondaryTH=scale, maxslope=maxslope, minslope=minslope)
 
 # Calculate the drainage area
 area=drainageArea(slopesUW$direction, printflag=F)
- 
+
 # Define subbasins for calcualting river reach slopes
 # the riv_th here is the drainage area threshold for splitting the river network branches
 # when you do this you can still end up with subbasins with drainage areas less than the riv_th
-# when multiple branches come together in a small area. 
+# when multiple branches come together in a small area.
 # To fix this you can set a merge threshold (merge_th) so that subbains with areas < merge_th autmoatically get merged with their downstream neighbor
-subbasin=CalcSubbasins(slopesUW$direction, area, riv_th=sub_th, merge_th=10)
-#plot the resulting subbasins and rivers 
+subbasin=CalcSubbasins(slopesUW$direction, area, riv_th=sub_th, merge_th=mrg_th)
+#plot the resulting subbasins and rivers
 temp=subbasin$RiverMask
 temp[temp==0]=NA
 maskcol=colorRampPalette(c('black', 'black'))
@@ -109,11 +109,11 @@ maskcol=colorRampPalette(c('black', 'black'))
 image.plot(subbasin$subbasins)
 image.plot((temp*2), add=T, col=maskcol(2), legend=F)
 
-#Calculate the slopes 
-# The "river_method' flag here determines how the river cells will be handeled (e.g. using subbasin averages along reaches). Refer to the top of this script or the function for details. 
-slopesUW=SlopeCalcUP(dem=travHS$dem, direction=travHS$direction, dx=dx, dy=dy, secondaryTH=0.1, maxslope=maxslope, minslope=minslope, river_method=riv_method, rivermask=subbasin$RiverMask, subbasin=subbasin$subbasins) 
+#Calculate the slopes
+# The "river_method' flag here determines how the river cells will be handeled (e.g. using subbasin averages along reaches). Refer to the top of this script or the function for details.
+slopesUW=SlopeCalcUP(dem=travHS$dem, direction=travHS$direction, dx=dx, dy=dy, secondaryTH=scale, maxslope=maxslope, minslope=minslope, river_method=riv_method, rivermask=subbasin$RiverMask, subbasin=subbasin$subbasins)
 
-#Alternate more advanced approach: Define a river mask separate from the subbasin river mask and use this for the slope calculations. If you do this the average slopes will still be calculated 
+### Option 2b: Alternate more advanced approach: Define a river mask separate from the subbasin river mask and use this for the slope calculations. If you do this the average slopes will still be calculated
 #by subbasin using the sub_th, but you can apply those average sloeps to more river cells by setting a lower threshold here. This is the 'riv_th' set at the top
 #if you set riv_th=sub_th at the top this will have the same effect as just running the slope calc with the subbasin$RiverMask
 rivers=area
@@ -128,7 +128,7 @@ maskcol=colorRampPalette(c('black', 'black'))
 image.plot(subbasin$subbasins)
 image.plot((temp*2), add=T, col=maskcol(2), legend=F)
 
-slopesUW=SlopeCalcUP(dem=travHS$dem, direction=travHS$direction, dx=dx, dy=dy, secondaryTH=0.1, maxslope=maxslope, minslope=minslope, river_method=riv_method, rivermask=rivers, subbasin=subbasin$subbasins) 
+slopesUW=SlopeCalcUP(dem=travHS$dem, direction=travHS$direction, dx=dx, dy=dy, secondaryTH=scale, maxslope=maxslope, minslope=minslope, river_method=riv_method, rivermask=rivers, subbasin=subbasin$subbasins)
 
 #Look at the slopes and directions
 image(slopesUW$slopex)
