@@ -9,7 +9,7 @@ CalcSubbasins=function(direction, area, mask, d4=c(1,2,3,4), riv_th=50, printfla
 # 1. d4: directional numbering system for the direction matrix provided
 #	order must be: down, left, top,right
 #   defaults to: 1,2,3,4
-# 2. mask: Mask with ones for cells to be processed and zeros for everything else - defaults to a mask of all 1's
+# 2. mask: Mask with ones for cells to be processed and zeros for everything else - defaults to a mask of all 1e's
 # 3. riv_th= threshold for the drainage area minimum used desigate cells as river cells, defaults to 50
 # 4. merge_th=after all the subbasins have been defined subbasins with areas <merg_th will be combined with their downstream neighbors (Defaults to 0 which means no merging will take place)
 
@@ -223,26 +223,44 @@ while(nqueue>0){
 }	
 
 
-# ###3. if merge_th >0 look for basins with areas less than the merge threshold, that don't drain to the  and merge with their downstream neighbors
-# ## STill under construction
-# if(merge_th>0){
-	# small_list=which(summary[,7]<merge_th & summary[,6]>0)
-	# nsmall=length(small_list)
-	# dsmerge=rep(0, nrow(summary)) #array to sort the downstream basins to merge
-	# areatemp=summary[,7]
-	# while(nsmall>0){
-		# #loop through and record the downstream subbasin ID for every subbasin
-		# for(i in 1:nsmall){
-			# sb_index=which(summary[,1]==small_list[i])
-			# dsmerge[sb_index]=summary[sb_index,6] #get the downstream subbasin ID
-			# ds_index=which(summary[,1]==small_list[i])
-			# areatemp[d]
-		# } #end for i
-	# }# end while
+###3. if merge_th >0 look for basins with areas less than the merge threshold, that don't drain out of the domain and merge with their downstream neighbors
 	
-	
-#}#end if
+delete=NULL #list of subbasins to delete from summary list
+if(merge_th>0){	
+	nsb=nrow(summary)
+	for(i in 1:nsb){
+		#check if area is less than the threshold & it does not drain externally
+		if(summary[i,7]<merge_th & summary[i,6]>0){
+			delete=c(delete,i)
+			bas1=summary[i,1]
+			bas2=summary[i,6]
+			
+			#replace numbers in the subbasin matrix
+			ilist=which(subbasin==bas1) 
+			subbasin[ilist]=bas2
+			
+			#replace numbers in the subbasin area  matrix
+			ilistA=which(subbasinA==bas1) 
+			subbasinA[ilistA]=bas2
+			
+			#adjust the summary matrix for the downstream basin
+			summary[which(summary[,1]==bas2),7]=summary[which(summary[,1]==bas2),7] + summary[i,7]
+			
+			#Change the downstream basin number for any upstream basins to downstream basin
+			uplist=which(summary[,6]==bas1)
+			summary[uplist,6]=bas2
+			
+			#print(paste(bas1 , "- downstream:", bas2, "Upstream:" ))
+			#print(uplist)
 
+		} #end if
+	} # end for
+
+	if(is.null(delete)==F){
+		summary=summary[-delete,]
+	}
+
+} # if merge >0
 
 
 #test=rivers
@@ -251,7 +269,8 @@ while(nqueue>0){
 #image.plot(subbasinA, zlim=c(35,50))
 #image.plot((test*2), add=T, col=maskcol(2), legend=F)
 		
-output_list=list("segments"=subbasin, "subbasins"=subbasinA, "RiverMask"=rivers)
+output_list=list("segments"=subbasin, "subbasins"=subbasinA, "RiverMask"=rivers, "summary"=summary)
+
 return(output_list)
 
 }
