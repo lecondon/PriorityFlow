@@ -1,4 +1,4 @@
-SlopeCalcUP=function(dem, direction, dx, dy,  mask, borders, borderdir=1, minslope=1e-5,  d4=c(1,2,3,4),  cutmax=F, maxTH=0.5, scalesecond=F, secondaryTH=0.5, river_method=0, rivermask, subbasins){
+SlopeCalcUP=function(dem, direction, dx, dy,  mask, borders, borderdir=1,  d4=c(1,2,3,4),  minslope=1e-5, maxslope=-1, secondaryTH=-1, river_method=0, rivermask, subbasins, printflag=F){
 
 #Mandatory Inputs:
 # dem - matrix of elevation values
@@ -14,14 +14,11 @@ SlopeCalcUP=function(dem, direction, dx, dy,  mask, borders, borderdir=1, minslo
 
 # d4: directional numbering system: the numbers you want to assign to down, left, top,right (defaults to 1,2,3,4)
 
-#minslope: Minimum slope value to apply to flat cells if needed
+# minslope: Minimum absolute slope value to apply to flat cells if needed. Defaults to 1e-5
+# maxslope - Maximum absolute value of slopes. If this is set to -1 the slopes will not be limited. Default value is -1
 
-# cutmax- T/F flag indicating whether to limit the maximum absolute value of slopes to some threshold
-# maxTH - maximum value to be used if cutmax=T
-
-# scalesecond- T/F flag indicating whether to limit the slopes in the secondary directions relative to the primary
 # secondary threshold - maximum ratio of |secondary|/|primary| to be enforced. 
-#NOTE - this scaling occurs after any max threholds are applied
+#NOTE - this scaling occurs after any max threholds are applied. If this is set to -1 no scaling will be applied.  
 
 #rivermethod- Optional method to treat river cells differently from the rest of the domain 
 	# 0: default value, no special treatment for river cells
@@ -358,27 +355,26 @@ xmask[leftlist]=1
 xmask[rightlist]=-1
 
 ###################################
-#If an upper limit on slopes is set (i.e. cutmax==T)
-if(cutmax==T){
-	print(paste("Limiting slopes to +/-", maxTH))
+#If an upper limit on slopes is set (i.e. maxslope is positive)
+if(maxslope>=0){
+	print(paste("Limiting slopes to maximum absolute value of", maxslope))
 	#x slopes
-	xclipP=which(slopex2>maxTH)
-	slopex2[xclipP]=maxTH
-	xclipN=which(slopex2<(-maxTH))
-	slopex2[xclipN]=(-maxTH)
+	xclipP=which(slopex2>maxslope)
+	slopex2[xclipP]=maxslope
+	xclipN=which(slopex2<(-maxslope))
+	slopex2[xclipN]=(-maxslope)
 	
 	#y slopes
-	yclipP=which(slopey2>maxTH)
-	slopey2[yclipP]=maxTH
-	yclipN=which(slopey2<(-maxTH))
-	slopey2[yclipN]=(-maxTH)
+	yclipP=which(slopey2>maxslope)
+	slopey2[yclipP]=maxslope
+	yclipN=which(slopey2<(-maxslope))
+	slopey2[yclipN]=(-maxslope)
 }
-
 
 
 ###################################
 #If a maximum secondary/primary slope ratio is set (i.e. scalesecond==T)
-if(scalesecond==T){
+if(secondaryTH>=0){
 	print(paste("Limiting the ratio of secondary to primary slopes", secondaryTH))	
 	
 	#Make matrices of primary and secondary slopes and ratios
@@ -495,8 +491,10 @@ if(nflat!=0){
 	print(paste("WARNING:", nflat, "Flat cells found"))
 	flatloc=which(slopex2==0 & slopey2==0, arr.ind=T)
 	flatlist=which(slopex2==0 & slopey2==0)
-	print("Flat locations (note this is x,y)")
-	print(flatloc)
+	if(printflag){
+		print("Flat locations (note this is x,y)")
+		print(flatloc)
+	}
 	#impose a minimum slope in the primary direction for flat cells
 	for(i in 1:nflat){
 		dtemp=direction[flatlist[i]]
@@ -509,7 +507,26 @@ if(nflat!=0){
 	print(paste("After processing:", nflat, "Flat cells left"))
 }
 
+###################################
+#If an lower limit on slopes is set (i.e. minslope is greater than zero)
+if(minslope>=0){
+	print(paste("Limiting slopes to minimum", minslope))
+	#x slopes
+	xclipP=which(slopex2<minslope & slopex2>0 & xmask==1)
+	slopex2[xclipP]=minslope
+	xclipN=which(slopex2>(-minslope) & slopex2<0 & xmask==1)
+	slopex2[xclipN]=(-minslope)
+	
+	#y slopes
+	yclipP=which(slopey2<minslope & slopey2>0 & ymask==1)
+	slopey2[yclipP]=minslope
+	yclipN=which(slopey2>(-minslope) & slopey2<0 & ymask==1)
+	slopey2[yclipN]=(-minslope)
+	#print(paste('min adjustment', length(xclipP), range(slopex2[xclipP]), length(xclipN), length(yclipP), length(yclipN), range(slopey2[yclipP])))
+}
 
+
+###########################
 #replace the NA's with 0s
 nax=which(is.na(slopex2==T))
 nay=which(is.na(slopey2==T))
