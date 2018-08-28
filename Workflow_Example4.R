@@ -30,10 +30,10 @@ minslope=1e-5	#minimum slope (slopes with absolute value less than this will be 
 scale=0.1 #The maximum ratio of secondary to primary flow directions (set to -1 if you don't want the secondary slopes to be scaled, set to 0 if you want only primary flow directios)
 
 #River and subbasin size for slope calculations
-sub_th=100 #area threshold to use for subbasin delineation
-riv_th=sub_th #optional additional area threshold to use for the river mask for slope processing. See notes below if you want to change this to be different from the subbasin threshold
+sub_th=100 #area threshold (number of grid cells) to use for subbasin delineation
+riv_th=sub_th #optional additional area threshold (number of grid cells) to use for the river mask for slope processing. See notes below if you want to change this to be different from the subbasin threshold
 riv_method=3 #method for processing river cellls (0=treat river cells the same as the rest of the domain, 1=set secondary slopes along the river to zero, 2=apply subbasin average slopes to river cells, 3=apply subbasin average river slopes of the river cells)
-mrg_th=10	#Threshold for merging small subbasins in the subbasin analysis
+mrg_th=10	#Threshold number of grid cells for merging small subbasins in the subbasin analysis
 
 
 #Grid dimensions for slopes
