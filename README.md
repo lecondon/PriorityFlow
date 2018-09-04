@@ -4,7 +4,7 @@ This repo contains a set of R Functions and example workflow scripts for process
 ### DEM Processing
 The DEM processing code is a modified version of the 'Priority Flood' algorithm which is a depression filling algorithm (Wang and Liu 2006; Barnes et al., 2014; Zhou, 2016).  This is an optimal approach that processes the DEM to ensure every cell drains to the border.
 
-As implemented here there are options to ensure drainage to the edges of a regular rectangular domain or the user can provide a mask for an irregular domain. NOTE that if you are providing a mask for an irregular domain boundary you must ensure that your mask is D4 contiguous. See the mask tip below for one approach to achieve this using grass.
+As implemented here there are options to ensure drainage to the edges of a regular rectangular domain or the user can provide a mask for an irregular domain. NOTE: if you are providing a mask for an irregular domain boundary you must ensure that your mask is D4 contiguous. See the mask tip below for one approach to achieve this using grass.
 
 Additionally, a second processing option is provided if there is an river network that you would like to enforce. In this case, the river network is provided first as a mask to the processing algorithm to ensure that every identified river cell drains to the boundary of the domain (regular or irregular). This step will also ensure a D4 connected river network (i.e. stair stepping around any diagonal river neighbors). Next the remaining cells are processed using the river network as the boundary, ensuring that every other cell drains either to a river or to a boundary. For examples of this approach refer to `Workflow_Example3.R` and `Workflow_Example4.R`.
 
