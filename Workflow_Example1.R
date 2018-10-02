@@ -15,6 +15,7 @@ source("./functions/drainage_area.R")
 source("./functions/Slope_Calc_Upwind.R")
 source("./functions/Get_Border.R")
 source("./functions/Define_Subbasins.R")
+source("./functions/Write_Raster.R")
 
 ##########################################
 #Settings
@@ -33,7 +34,6 @@ sub_th=100 #area threshold (number of grid cells) to use for subbasin delineatio
 riv_th=sub_th #optional additional area threshold (number of grid cells) to use for the river mask for slope processing. See notes below if you want to change this to be different from the subbasin threshold
 riv_method=3 #method for processing river cellls (0=treat river cells the same as the rest of the domain, 1=set secondary slopes along the river to zero, 2=apply subbasin average slopes to river cells, 3=apply subbasin average river slopes of the river cells)
 mrg_th=10	#Threshold number of grid cells for merging small subbasins in the subbasin analysis
-
 
 #Grid dimensions for slopes
 dx=1000 #grid cell size for slope calculations
@@ -166,6 +166,9 @@ write.table( t(travHS$dem[,ny:1]) ,paste(runname, ".dem.out.txt", sep=""), row.n
 write.table( t(area[,ny:1]) , paste(runname, ".area.out.txt", sep=""), row.names=F, col.names=F)
 write.table( t(subbasin$subbasins[,ny:1]) , paste(runname, ".subbasins.out.txt", sep=""), row.names=F, col.names=F)
 write.table( t(subbasin$segments[,ny:1]) , paste(runname, ".subbasin_streams.out.txt", sep=""), row.names=F, col.names=F)
+
+#Example writing out a variable as a raster
+write.raster( t(subbasin$segments[,ny:1]) , paste(runname, ".subbasin_streams.out.raster.txt", sep=""), xllcorner=0.0, yllcorner=0.0, dx=dx, naval=-999)
 
 ## write out the subbasin summary information
 write.table(subbasin$summary, paste(runname, ".Subbasin_Summary.txt", sep=""), row.names=F)
