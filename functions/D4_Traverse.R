@@ -61,6 +61,7 @@ if(nqueue>nchunk){
 	print(paste('inital queue:', nqueue, "Not splitting"))
 	queue1=queue
 	nqueue2=0
+	th=queue1[nqueue,3]*1.1
 }
 t0=proc.time()
 

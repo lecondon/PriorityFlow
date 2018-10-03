@@ -168,7 +168,7 @@ write.table( t(subbasin$subbasins[,ny:1]) , paste(runname, ".subbasins.out.txt",
 write.table( t(subbasin$segments[,ny:1]) , paste(runname, ".subbasin_streams.out.txt", sep=""), row.names=F, col.names=F)
 
 #Example writing out a variable as a raster
-write.raster( t(subbasin$segments[,ny:1]) , paste(runname, ".subbasin_streams.out.raster.txt", sep=""), xllcorner=0.0, yllcorner=0.0, dx=dx, naval=-999)
+write.raster( t(subbasin$segments[,ny:1]) , paste(runname, ".subbasin_streams.out.asc", sep=""), xllcorner=0.0, yllcorner=0.0, dx=dx, naval=-999)
 
 ## write out the subbasin summary information
 write.table(subbasin$summary, paste(runname, ".Subbasin_Summary.txt", sep=""), row.names=F)

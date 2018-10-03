@@ -10,7 +10,7 @@ SlopeCalcUP=function(dem, direction, dx, dy,  mask, borders, borderdir=1,  d4=c(
 # mask - matrix with 1 for cells within the domain and 0 for cells outside the domain
 # borders - a matrix with 1's for borders cells to default to pointing out, 2 to default to pointing in, and 0 for all non-border cells. 
 
-#borderddir - default value for border cells 1=point out, 2= point 1
+#borderddir - default value for border cells 1=point out, 2= point in
 
 # d4: directional numbering system: the numbers you want to assign to down, left, top,right (defaults to 1,2,3,4)
 
