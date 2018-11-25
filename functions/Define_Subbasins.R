@@ -1,9 +1,27 @@
 CalcSubbasins=function(direction, area, mask, d4=c(1,2,3,4), riv_th=50, printflag=F, merge_th=0){
-#function to divide the domain into subbasins with individual stream segments
+####################################################################
+# PriorityFlow - Topographic Processing Toolkit for Hydrologic Models
+# Copyright (C) 2018  Laura Condon (lecondon@email.arizona.edu)
+# Contributors - Reed Maxwell (rmaxwell@mines.edu)
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation version 3 of the License
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>
+####################################################################
+
+# CalcSubbasins - function to divide the domain into subbasins with individual stream segments
 
 #Mandatory Inputs:
 # 1. direction: numerical matrix of d4 flow directions
-# 2. area: drainage areas for every cell  
+# 2. area: drainage areas for every cell
 
 #Optional Inputs:
 # 1. d4: directional numbering system for the direction matrix provided
@@ -32,7 +50,7 @@ border[border==4]=0
 #if(missing(border)){
 #	border=matrix(0, nrow=nx, ncol=ny)
 #	border[1:nx,c(1,ny)]=1
-#	border[c(1,nx), 1:ny]=1	
+#	border[c(1,nx), 1:ny]=1
 #}
 
 
@@ -41,7 +59,7 @@ subbasin=matrix(0, nrow=nx, ncol=ny)
 marked=matrix(0, nrow=nx, ncol=ny)
 
 #D4 neighbors
-kd=matrix(0, nrow=4, ncol=2) #ordered down, left top right 
+kd=matrix(0, nrow=4, ncol=2) #ordered down, left top right
 kd[,1]=c(0,-1,0,1)
 kd[,2]=c(-1,0,1,0)
 
@@ -53,7 +71,7 @@ rivers[area>=riv_th]=1
 #image.plot(rivers)
 
 #make masks of which cells drain down, up, left right
-down=up=left=right=matrix(0, nrow=nx, ncol=ny) 
+down=up=left=right=matrix(0, nrow=nx, ncol=ny)
 down[which(direction==d4[1])]=1
 left[which(direction==d4[2])]=1
 up[which(direction==d4[3])]=1
@@ -89,7 +107,7 @@ ends[blist[,1]]=2
 rivarea=area*rivers
 
 index=0
-#subbasin[blist[1,1]]=index 
+#subbasin[blist[1,1]]=index
 #marked[blist[1,1]]=1
 
 subbasin=matrix(0, nrow=nx, ncol=ny)
@@ -106,24 +124,24 @@ for(i in 1:nheadwater){
 	#print(paste("Starting new Branch", i,  index, subbasin[xtemp,ytemp]))
 	#image.plot(subbasin)
 	summarytemp=c(index, xtemp, ytemp, rep(0,4))
-	
+
 	while(active==T){
 		#get the direction and find downstream cell
 		dirtemp=which(d4==direction[xtemp,ytemp])
 		xds=xtemp+kd[dirtemp,1]
 		yds=ytemp+kd[dirtemp,2]
-		
+
 		#if the downstream neigbor hasn't already been procesed and its in the domain
 		if(xds*yds>0 & xds<=nx & yds<=ny){
 		if(marked[xds,yds]==0 & mask[xds,yds]==1){
 			#Check the area difference
 			accum=area[xds,yds]-area[xtemp, ytemp]
-		
+
 			#if there is a tributary coming in then start a new segment
 			if(accum>riv_th){
 				#print('Here')
 				summarytemp[4:5]=c(xtemp,ytemp)
-				summarytemp[6]=index+1		
+				summarytemp[6]=index+1
 				index=index+1
 				ends[xtemp,ytemp]=3
 				ends[xds,yds]=2
@@ -137,7 +155,7 @@ for(i in 1:nheadwater){
 
 				#print(paste("new index", index))
 			}
-		
+
 			#assign subbasin number to the downstream cell and mark it off
 			#print("step")
 			subbasin[xds,yds]=index
@@ -192,15 +210,15 @@ ii=1
 while(nqueue>0){
 	if(printflag){print(paste("lap", ii, "ncell", nqueue))}
 	queue2=NULL
-	
+
 	#loop through the queue
 	for(i in 1:nqueue){
 		xtemp=queue[i,1]
 		ytemp=queue[i,2]
 		#add one to the subbasin area for the summary
 		sbtemp=subbasinA[xtemp,ytemp]
-		summary[sbtemp,7]=summary[sbtemp,7]+1 
-		
+		summary[sbtemp,7]=summary[sbtemp,7]+1
+
 		#look for cells that drain to this cell
 		for(d in 1:4){
 			xus=xtemp-kd[d,1]
@@ -214,19 +232,19 @@ while(nqueue>0){
 				} #end if its on the mask
 			} # end if its in the domain bounds
 		} #end direction loop
-	}	
+	}
 	if(length(queue2)>=2){
-		queue=queue2	
+		queue=queue2
 		nqueue=nrow(queue)
 		ii=ii+1
 	} else{nqueue=0}
-}	
+}
 
 
 ###3. if merge_th >0 look for basins with areas less than the merge threshold, that don't drain out of the domain and merge with their downstream neighbors
-	
+
 delete=NULL #list of subbasins to delete from summary list
-if(merge_th>0){	
+if(merge_th>0){
 	nsb=nrow(summary)
 	for(i in 1:nsb){
 		#check if area is less than the threshold & it does not drain externally
@@ -234,22 +252,22 @@ if(merge_th>0){
 			delete=c(delete,i)
 			bas1=summary[i,1]
 			bas2=summary[i,6]
-			
+
 			#replace numbers in the subbasin matrix
-			ilist=which(subbasin==bas1) 
+			ilist=which(subbasin==bas1)
 			subbasin[ilist]=bas2
-			
+
 			#replace numbers in the subbasin area  matrix
-			ilistA=which(subbasinA==bas1) 
+			ilistA=which(subbasinA==bas1)
 			subbasinA[ilistA]=bas2
-			
+
 			#adjust the summary matrix for the downstream basin
 			summary[which(summary[,1]==bas2),7]=summary[which(summary[,1]==bas2),7] + summary[i,7]
-			
+
 			#Change the downstream basin number for any upstream basins to downstream basin
 			uplist=which(summary[,6]==bas1)
 			summary[uplist,6]=bas2
-			
+
 			#print(paste(bas1 , "- downstream:", bas2, "Upstream:" ))
 			#print(uplist)
 
@@ -268,7 +286,7 @@ if(merge_th>0){
 #maskcol=colorRampPalette(c('black', 'black'))
 #image.plot(subbasinA, zlim=c(35,50))
 #image.plot((test*2), add=T, col=maskcol(2), legend=F)
-		
+
 output_list=list("segments"=subbasin, "subbasins"=subbasinA, "RiverMask"=rivers, "summary"=summary)
 
 return(output_list)

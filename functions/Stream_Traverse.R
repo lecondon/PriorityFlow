@@ -1,6 +1,23 @@
 StreamTraverse=function(dem, mask, queue, marked, step, direction,basins, d4=c(1,2,3,4), printstep=F, epsilon=0){
+####################################################################
+# PriorityFlow - Topographic Processing Toolkit for Hydrologic Models
+# Copyright (C) 2018  Laura Condon (lecondon@email.arizona.edu)
+# Contributors - Reed Maxwell (rmaxwell@mines.edu)
 
-#Function to process stream networks walking upstream on d4 neigbors
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation version 3 of the License
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>
+####################################################################
+
+#StreamTravers - Function to process stream networks walking upstream on d4 neigbors
 #in a river mask. Where no D4 neigbhors exist it looks for d8 neigbors
 #and created d4 bridges to these diagonal cells
 
@@ -11,11 +28,11 @@ StreamTraverse=function(dem, mask, queue, marked, step, direction,basins, d4=c(1
 # 4. marked: a matrix of which cells have been marked already
 
 #Optional Inputs:
-# 1. d4: directional numbering system: the numbers 
+# 1. d4: directional numbering system: the numbers
 #	you want to assigne to down, left, top,right
 #   defaults to 1,2,3,4
 # 2. printstep: if true it will print out the step number and the size of the queue
-# 3. epsilon: amount to add to filled areas to avoid creating flats, defaults to zero 
+# 3. epsilon: amount to add to filled areas to avoid creating flats, defaults to zero
 # 4. step: a matrix of the step number for cells that have been processed - defaults to all zeros
 # 5. direction: a matrix of hte flow directions for cells that have been processed - defaults to all zeros
 # 6. basins: a matrix of basin numbers that can be created by the initilizaiton script. If you input this every cell will be assigned the same basin as the cell that adds it
@@ -32,7 +49,7 @@ if(missing(direction)){direction=matrix(NA,nrow=nx, ncol=ny)} #make a blank dire
 if(missing(basins)){basins=matrix(0,nrow=nx, ncol=ny)} #make all the basins=1
 
 #D4 neighbors
-kd=matrix(0, nrow=4, ncol=3) #ordered down, left top right 
+kd=matrix(0, nrow=4, ncol=3) #ordered down, left top right
 kd[,1]=c(0,-1,0,1)
 kd[,2]=c(-1,0,1,0)
 kd[,3]=c(d4[3], d4[4], d4[1], d4[2])  #We are walking upstream so the direction needs to point opposite
@@ -43,9 +60,9 @@ kd8[,1]=c(-1,-1,1,1)
 kd8[,2]=c(-1,1,1,-1)
 #directions for the two d4 neighbor cells that are tested
 #the first neigbhor cell is xC,yk (i.e. just moving up or down)
-kd8[,3]= c(d4[3], d4[1], d4[1], d4[3]) 
-#the second neigbor dell is xk, yC (i.e. just moving left or right)  
-kd8[,4]= c(d4[4], d4[4], d4[2], d4[2]) 
+kd8[,3]= c(d4[3], d4[1], d4[1], d4[3])
+#the second neigbor dell is xk, yC (i.e. just moving left or right)
+kd8[,4]= c(d4[4], d4[4], d4[2], d4[2])
 
 
 nqueue=nrow(queue)
@@ -84,7 +101,7 @@ for(k in 1:4){
 				count=count+1
 				nqueue=nqueue+1
 			}
-		}		
+		}
 }
 #print(paste(count, "available D4 neighbors found"))
 
@@ -114,14 +131,14 @@ if(count==0){
 					n4[2,]=c(xk, yC, dem[xk, yC], kd8[k,4])
 					count4=count4+1
 				}
-				
+
 				#choose the neighbor which is the lowest without going under
 				#and if not fill the highest
 				if(count4>0){
 					if(min(n4[,3], na.rm=T)>=demC){
 						npick=which.min(n4[,3])
 					} else{
-						npick=which.max(n4[,3])	
+						npick=which.max(n4[,3])
 					}
 					demtemp=max((demC+epsilon), dem[n4[npick,1], n4[npick,2]])
 					demnew[n4[npick,1], n4[npick,2]]=demtemp
@@ -135,7 +152,7 @@ if(count==0){
 				} else{
 					#print(paste(xC, yC, 'D8 mask cell found with no viable d4 neighbors'))
 				} #end if count4>0
-				
+
 			} #end if d8 is nt marked and on mask
 		} #end if d8 is within the domain
 	} #end for k in 1:4 (i.e. loping over d8 neighbors)
@@ -155,7 +172,7 @@ if(nqueue>1){
 if(nqueue==1){
 	queue=matrix(queue, ncol=3,byrow=T)
 }
- 
+
 nstep=nstep+1
 if(printstep){print(paste("Step:", nstep, "NQueue:", nqueue))}
 
@@ -167,4 +184,3 @@ output_list=list("dem"=demnew, "mask"=mask, "marked"=marked, "step"= step, "dire
 return(output_list)
 
 } # end function
-

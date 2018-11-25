@@ -1,6 +1,24 @@
 D4TraverseB=function(dem, queue, marked, mask, step, direction, basins, d4=c(1,2,3,4), printstep=F, nchunk=100, epsilon=0){
 
-#Function to process stream networks walking upstream on d4 neigbors
+####################################################################
+# PriorityFlow - Topographic Processing Toolkit for Hydrologic Models
+# Copyright (C) 2018  Laura Condon (lecondon@email.arizona.edu)
+# Contributors - Reed Maxwell (rmaxwell@mines.edu)
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation version 3 of the License
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>
+####################################################################
+
+#D4TraverB - Function to process stream networks walking upstream on d4 neigbors
 #in a river mask. Where no D4 neigbhors exist it looks for d8 neigbors
 #and created d4 bridges to these diagonal cells
 
@@ -10,15 +28,16 @@ D4TraverseB=function(dem, queue, marked, mask, step, direction, basins, d4=c(1,2
 # 3. marked: a matrix of which cells have been marked already
 
 #Optional Inputs:
-# 1. d4: directional numbering system: the numbers 
+# 1. d4: directional numbering system: the numbers
 #	you want to assigne to down, left, top,right
 #   defaults to 1,2,3,4
 # 2. printstep: if true it will print out the step number and the size of the queue
-# 3. epsilon: amount to add to filled areas to avoid creating flats, defaults to zero 
+# 3. epsilon: amount to add to filled areas to avoid creating flats, defaults to zero
 # 4. mask: Mask with ones for cells to be processed and zeros for everything else - defaults to a mask of all 1's
 # 5. step: a matrix of the step number for cells that have been processed - defaults to all zeros
 # 6. direction: a matrix of the flow directions for cells that have been processed - defaults to all zeros
 # 7. basins: a matrix of basin numbers that can be created by the initilizaiton script. If you input this every cell will be assigned the same basin as the cell that adds it
+
 
 t0=proc.time()
 nx=dim(dem)[1]
@@ -32,7 +51,7 @@ if(missing(direction)){direction=matrix(NA,nrow=nx, ncol=ny)} #make a blank dire
 if(missing(basins)){basins=matrix(0,nrow=nx, ncol=ny)} #make all the basins=1
 
 #D4 neighbors
-kd=matrix(0, nrow=4, ncol=3) #ordered down, left top right 
+kd=matrix(0, nrow=4, ncol=3) #ordered down, left top right
 kd[,1]=c(0,-1,0,1)
 kd[,2]=c(-1,0,1,0)
 kd[,3]=c(d4[3], d4[4], d4[1], d4[2])  #We are walking upstream so the direction needs to point opposite
@@ -43,7 +62,7 @@ nqueue=nrow(queue)
 nstep=0
 queuetemp=NULL
 
-#split the queue in 2 using the top nchuck values for the first 
+#split the queue in 2 using the top nchuck values for the first
 #queue and the rest for the second
 if(nqueue>nchunk){
 	qsort=queue[order(queue[,3]),]
@@ -110,7 +129,7 @@ for(k in 1:4){
 					#print(paste("Q2 add:", round(demtemp,1), round(th,1)))
 
 				}
-				
+
 				marked[xk, yk]=1
 				step[xk, yk]=step[xC, yC]+1
 				direction[xk,yk]=kd[k,3]
@@ -118,8 +137,8 @@ for(k in 1:4){
 				count=count+1
 				#nqueue=nqueue+1
 			}
-		}	
-	#t4=proc.time()	
+		}
+	#t4=proc.time()
 }
 #print(paste(count, "available D4 neighbors found", nrow(queue1)))
 #t0=proc.time()
@@ -161,7 +180,7 @@ if(nqueue>1){
 		nqueue2=length(queue2)/3
 		q1max=0
 		t0=proc.time()
-		
+
 	} else if(nqueuetemp<=nchunk & nqueue2 >0){
 		split=split+1
 		if(printstep){print(paste('Split:', split, 'Q2', nqueuetemp,  'taking last chunk, nstep=', nstep, "Q1 Max:", q1max))}
@@ -194,4 +213,3 @@ output_list=list("dem"=demnew, "mask"=mask, "marked"=marked, "step"= step, "dire
 return(output_list)
 
 } # end function
-

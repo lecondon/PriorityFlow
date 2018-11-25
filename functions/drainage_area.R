@@ -1,9 +1,27 @@
 drainageArea=function(direction, mask, d4=c(1,2,3,4), printflag=F){
-#function to calculate numbe of cells draining to any cell
+####################################################################
+# PriorityFlow - Topographic Processing Toolkit for Hydrologic Models
+# Copyright (C) 2018  Laura Condon (lecondon@email.arizona.edu)
+# Contributors - Reed Maxwell (rmaxwell@mines.edu)
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation version 3 of the License
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>
+####################################################################
+
+#DraingeArea - function to calculate numbe of cells draining to any cell
 #given a flow direction file
 
 #Mandatory Inputs:
-# 1. direction: numerical matrix of d4 flow directions 
+# 1. direction: numerical matrix of d4 flow directions
 
 #Optional Inputs:
 # 1. d4: directional numbering system for the direction matrix provided
@@ -30,7 +48,7 @@ border[border==4]=0
 #if(missing(border)){
 #	border=matrix(0, nrow=nx, ncol=ny)
 #	border[1:nx,c(1,ny)]=1
-#	border[c(1,nx), 1:ny]=1	
+#	border[c(1,nx), 1:ny]=1
 #}
 
 
@@ -38,12 +56,12 @@ border[border==4]=0
 drainarea=matrix(1, nrow=nx, ncol=ny)
 
 #D4 neighbors
-kd=matrix(0, nrow=4, ncol=2) #ordered down, left top right 
+kd=matrix(0, nrow=4, ncol=2) #ordered down, left top right
 kd[,1]=c(0,-1,0,1)
 kd[,2]=c(-1,0,1,0)
 
 #make masks of which cells drain down, up, left right
-down=up=left=right=matrix(0, nrow=nx, ncol=ny) 
+down=up=left=right=matrix(0, nrow=nx, ncol=ny)
 down[which(direction==d4[1])]=1
 left[which(direction==d4[2])]=1
 up[which(direction==d4[3])]=1
@@ -73,32 +91,32 @@ ii=1
 
 while(nqueue>0){
 	if(printflag){print(paste("lap", ii, "ncell", nqueue))}
-	
+
 	#loop through the queue
 	for(i in 1:nqueue){
 		#look downstream add 1 to the area and subtract 1 from the drainage #
 		xtemp=queue[i,1]
 		ytemp=queue[i,2]
-		
+
 		#if its has a flow direction
 		if(is.na(direction[xtemp,ytemp])==F){
 			dirtemp=which(d4==direction[xtemp,ytemp])
 			xds=xtemp+kd[dirtemp,1]
 			yds=ytemp+kd[dirtemp,2]
-		
+
 			#add one to the area of the downstream cell as long as that cell is in the domain
 			if(xds<=nx & xds>=1 & yds<=ny & yds>=1){
 				drainarea[xds, yds]=drainarea[xds, yds]+drainarea[xtemp,ytemp]
-		
+
 			#subtract one from the number of upstream cells from the downstream cell
 			draintemp[xds,yds]= draintemp[xds,yds] - 1
 		} #end if in the domain extent
 	} #end if not na
-							
+
 		#set the drain temp to -99 for current cell to indicate its been done
 		draintemp[xtemp,ytemp]=-99
 	} #end for i in 1:nqueue
-	
+
 	#make a new queue with the cells with zero upstream drains left
 	#queue=which(draintemp==0, arr.ind=T)
 	ilist=which(draintemp[blist[,1]]==0)
@@ -109,9 +127,9 @@ while(nqueue>0){
 		blist=NULL
 		if(printflag){print("blist empty")}
 	}
-	
+
 	nqueue=length(queue)/2
-	
+
 	if(nqueue==1){queue=matrix(queue, ncol=2, nrow=1)}
 	if(length(blist)/3==1){blist=matrix(blist, ncol=3, nrow=1)}
 	ii=ii+1
