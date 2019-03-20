@@ -6,6 +6,10 @@ PriorityFlow
 + Laura Condon (lecondon@email.arizona.edu)
 + Reed Maxwell (rmaxwell@mines.edu)
 
+#### Citation
+For more details on the model and if you use EcoSLIM in published work please cite the following reference:  
+   *Condon, LE and RM Maxwell (2019). Modified priority flood and global slope enforcement algorithm for topographic processing in physically based hydrologic modeling applications. Computers & Geosciences, [doi:10.1016/j.cageo.2019.01.20](https://doi.org/10.1016/j.cageo.2019.01.020).*
+
 
 DEM Processing
 --------------------
