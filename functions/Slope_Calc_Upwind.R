@@ -1,4 +1,4 @@
-SlopeCalcUP=function(dem, direction, dx, dy,  mask, borders, borderdir=1,  d4=c(1,2,3,4),  minslope=1e-5, maxslope=-1, secondaryTH=-1, river_method=0, rivermask, subbasins, printflag=F){
+SlopeCalcUP=function(dem, direction, dx, dy,  mask, borders, borderdir=1,  d4=c(1,2,3,4),  minslope=1e-5, maxslope=-1, secondaryTH=-1, river_method=0, rivermask, subbasins, printflag=F, upflag=T){
 ####################################################################
 # PriorityFlow - Topographic Processing Toolkit for Hydrologic Models
 # Copyright (C) 2018  Laura Condon (lecondon@email.arizona.edu)
@@ -46,6 +46,9 @@ SlopeCalcUP=function(dem, direction, dx, dy,  mask, borders, borderdir=1,  d4=c(
 	# NOTE: the river mask can be different from the rivers that were used to create the subbasins if desired (i.e. if you want to use a threshold of 100 to create subbasins but then apply to river cells with a threshold of 50)
 
 #rivermask - Mask with 1 for river cells and 0 for other cells
+
+#upflag - A flag indicating whether slope calc should be upwinded, defaults to T generating slopes that are consistent with ParFlow. If set to F
+#    then all slopes will be calcualted as [x+1]-[x]
 
 
 ###############################################################
