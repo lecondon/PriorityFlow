@@ -93,6 +93,7 @@ slopey1[,ny]=slopey1[,(ny-1)]
 
 #Assign slopes based on upwinding for all non border cells
 if(upflag==T){
+	print("upwinding slopes")
 slopex2=slopex1
 slopey2=slopey1
 for(j in 2:(ny-1)){
@@ -183,6 +184,7 @@ for(j in 2:(ny-1)){
  #end if upflag
 } else{
 	#If you are not using the upwinded slopes just use the [i+1]-i Calculations
+  print("standard slope calc")
 	slopex2=slopex1
 	slopey2=slopey1
 }
@@ -281,7 +283,17 @@ for(k in 1:nrow(borlist)){
 
 test=length(which((borddir-bordi)<0))
 missinglist=which((borddir-bordi)<0)
+missinglistA=which((borddir-bordi)<0, arr.ind=T)
 if(test>0){print(paste("ERROR:", test, "border cells missed!!"))}
+#these errors occur with sinks or some special cases where there arent ANY
+#usable neighbors e.g. the center cell of the example
+#[,1] [,2] [,3] [,4] [,5]
+#[1,]    1    0    0    0    0
+#[2,]    1    0    0    0    0
+#[3,]    1    1    1    1    0
+#[4,]    1    1    0    0    0
+#[5,]    1    0    0    0    0
+#These cells get assigned an arbitrary direction and minimum slope below
 
 
 #calculate the number of cells draining to any cell
