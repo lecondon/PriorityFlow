@@ -48,7 +48,7 @@ SlopeCalcUP=function(dem, direction, dx, dy,  mask, borders, borderdir=1,  d4=c(
 #rivermask - Mask with 1 for river cells and 0 for other cells
 
 #upflag - A flag indicating whether slope calc should be upwinded, defaults to T generating slopes that are consistent with ParFlow. If set to F
-#    then all slopes will be calcualted as [x+1]-[x]
+#    then all slopes will be calcualted as [i+1]-[i]
 
 
 ###############################################################
