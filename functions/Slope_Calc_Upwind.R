@@ -92,6 +92,7 @@ slopey1[,1:(ny-1)]=(demMask[,2:ny]-demMask[, 1:(ny-1)])/dy
 slopey1[,ny]=slopey1[,(ny-1)]
 
 #Assign slopes based on upwinding for all non border cells
+if(upflag==T){
 slopex2=slopex1
 slopey2=slopey1
 for(j in 2:(ny-1)){
@@ -179,7 +180,12 @@ for(j in 2:(ny-1)){
 	}#end if inside the mask and not a border cell
 	} #end for i
 } #end for j
-
+ #end if upflag
+} else{
+	#If you are not using the upwinded slopes just use the [i+1]-i Calculations
+	slopex2=slopex1
+	slopey2=slopey1
+}
 ###################
 #Assign flow directions and slopes for border cells
 bordi=borders #making a border indicator file with all 1's for any border cell
