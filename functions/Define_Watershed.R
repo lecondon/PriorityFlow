@@ -1,4 +1,4 @@
-CalcSubbasins=function(points, direction, area, mask, d4=c(1,2,3,4)){
+DelinWatershed=function(outlets, direction, d4=c(1,2,3,4), printflag=F){
 ####################################################################
 # PriorityFlow - Topographic Processing Toolkit for Hydrologic Models
 # Copyright (C) 2018  Laura Condon (lecondon@email.arizona.edu)
@@ -17,27 +17,22 @@ CalcSubbasins=function(points, direction, area, mask, d4=c(1,2,3,4)){
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
 ####################################################################
 
-# CalcSubbasins - function to divide the domain into subbasins with individual stream segments
+# DelinWatershed - function to define the watershed for a point or set of outlet points based on the flow direction file
 
 #Mandatory Inputs:
-# 1. List of points that you would like to define drainage area for
+# 1. x,y coordinated of the outlet points or points to mask upstream areas for if there is just one point this can be input as c(x,y), if there are multiple points, this should be a matrix with a separate row for each point
 # 2. direction: numerical matrix of d4 flow directions
-# 3. area: drainage areas for every cell - Get rid of this
 
 #Optional Inputs:
 # 1. d4: directional numbering system for the direction matrix provided
 #	order must be: down, left, top,right
 #   defaults to: 1,2,3,4
-# 2. mask: Mask with ones for cells to be processed and zeros for everything else - defaults to a mask of all 1's
+# 2. printflag: Optional flag to print out the number of cells in the queue durring iterations, defaults to F
 
 nx=nrow(direction)
 ny=ncol(direction)
 
-if(missing(mask)){mask=matrix(1, nrow=nx, ncol=ny)} #default to processing everything
-
-#Setup the border
-#initilize drinage area matrix
-subbasin=matrix(0, nrow=nx, ncol=ny)
+#initilize a matrix to store the mask
 marked=matrix(0, nrow=nx, ncol=ny)
 
 #D4 neighbors
@@ -52,22 +47,12 @@ left[which(direction==d4[2])]=1
 up[which(direction==d4[3])]=1
 right[which(direction==d4[4])]=1
 
-#calculate the number of river cells draining to any cell
-draincount=matrix(0, nrow=nx, ncol=ny)
-draincount[,1:(ny-1)]=draincount[,1:(ny-1)]+down[,2:ny]*rivers[,2:ny]
-draincount[,2:ny]=draincount[,2:ny]+up[,1:(ny-1)]*rivers[,1:(ny-1)]
-draincount[1:(nx-1),]=draincount[1:(nx-1),]+left[2:nx,]*rivers[2:nx,]
-draincount[2:nx, ]=draincount[2:nx,]+right[1:(nx-1),]*rivers[1:(nx-1),]
-
-
-
-###2. Get the drainage basins for every segement
-subbasinA=subbasin
-
-#start a queue with all the cells in the river
-queue=which(subbasin>0, arr.ind=T) #this should be the points queue
-qlist=which(subbasin>0)
-blist=cbind(which(subbasin>0), which(subbasin>0, arr.ind=T))
+#intialized the queue with the outlet points
+if(length(outlets)==2){
+  queue=matrix(outlets, nrow=1,  ncol=2) #if there is only one point pair format it into a matrix
+}else{
+  queue=outlets
+}
 
 nqueue=nrow(queue)
 count0=0
@@ -81,20 +66,21 @@ while(nqueue>0){
 		xtemp=queue[i,1]
 		ytemp=queue[i,2]
 		#add one to the subbasin area for the summary
-		sbtemp=subbasinA[xtemp,ytemp]
-		summary[sbtemp,7]=summary[sbtemp,7]+1
+		marked[xtemp,ytemp]=1
+
 
 		#look for cells that drain to this cell
 		for(d in 1:4){
 			xus=xtemp-kd[d,1]
 			yus=ytemp-kd[d,2]
 			if(xus*yus>0 & xus<=nx & yus<=ny){
-				if(mask[xus,yus]==1 & subbasinA[xus,yus]==0){
+			  if(is.na(direction[xus,yus])==F & marked[xus,yus]==0){
 					if(direction[xus,yus]==d4[d]){
-						subbasinA[xus,yus]=subbasinA[xtemp,ytemp] #assign the subbasin number to the upstream cell
-						queue2=rbind(queue2, c(xus,yus)) #add to the queue
+					  print(c(xus,yus))
+						marked[xus,yus]=1 #add the upstream cell to the mask
+						queue2=rbind(queue2, c(xus,yus)) # and then add the upstream cell to the queue
 					} #end if pointing to cell
-				} #end if its on the maskm*** just multiply and you can get rid of this
+			  } #end if in the mask
 			} # end if its in the domain bounds
 		} #end direction loop
 	}
@@ -105,7 +91,11 @@ while(nqueue>0){
 	} else{nqueue=0}
 }
 
-output_list=list("segments"=subbasin, "subbasins"=subbasinA, "RiverMask"=rivers, "summary"=summary)
+masklist=which(marked==1, arr.ind=T)
+xrange=range(masklist[,1])
+yrange=range(masklist[,2])
+
+output_list=list("watershed"=marked, 'xrange'=xrange, 'yrange'=yrange)
 
 return(output_list)
 
