@@ -76,7 +76,7 @@ while(nqueue>0){
 			if(xus*yus>0 & xus<=nx & yus<=ny){
 			  if(is.na(direction[xus,yus])==F & marked[xus,yus]==0){
 					if(direction[xus,yus]==d4[d]){
-					  print(c(xus,yus))
+					  #print(c(xus,yus))
 						marked[xus,yus]=1 #add the upstream cell to the mask
 						queue2=rbind(queue2, c(xus,yus)) # and then add the upstream cell to the queue
 					} #end if pointing to cell
