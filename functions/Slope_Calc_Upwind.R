@@ -290,7 +290,7 @@ for(k in 1:nrow(borlist)){
 test=length(which((borddir-bordi)<0))
 missinglist=which((borddir-bordi)<0)
 missinglistA=which((borddir-bordi)<0, arr.ind=T)
-if(test>0){print(paste("ERROR:", test, "border cells missed!!"))}
+#if(test>0){print(paste("ERROR:", test, "border cells missed!!"))}
 #these errors occur with sinks or some special cases where there arent ANY
 #usable neighbors e.g. the center cell of the example
 #[,1] [,2] [,3] [,4] [,5]
