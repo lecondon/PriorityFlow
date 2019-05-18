@@ -462,18 +462,19 @@ if(river_method==1){
 
 		#otherwise scale by whatever river secondary threshold is provided
 		xtemp=slopex2
-		xtemp_sclaed=slopey2*river_sceondaryTH #xslopes=yslopes*scaler
-		xtemp[ylist]=xtemp_scaled #where primary flow is in the y direction fill in x slopes with teh scaled values
+		xtemp_scaled=slopey2*river_secondaryTH #xslopes=yslopes*scaler
+		xtemp[ylist]=xtemp_scaled[ylist] #where primary flow is in the y direction fill in x slopes with teh scaled values
 		
-		#repet in y direction
+		#repeat in y direction
 		ytemp=slopey2
 		ytemp_scaled=slopex2*river_secondaryTH #yslopes=xslopes*scaler
-		ytemp[xlist]=ytemp_scaled
+		ytemp[xlist]=ytemp_scaled[xlist]
 		
 		#merge in these slopes over the river mask
 		rivlist=which(rivermask==1)
 		slopex2[rivlist]=xtemp[rivlist]
 		slopey2[rivlist]=ytemp[rivlist]
+		
 }
 }
 
@@ -489,6 +490,8 @@ if(river_method==2){
 	#Get the signs of the slopes before averaging to use in the secondary slope scaling
 	xsign=sign(slopex2)
 	ysign=sign(slopey2)
+	xsign[xsign==0]=1 # for zero slopes default to positive
+	ysign[ysign==0]=1 #for zero slopes default to positive
 	
 	#calculate the subbasin average slope
 	#NEED to sort out for x list and ylist so just averaging the primary
@@ -501,7 +504,11 @@ if(river_method==2){
 		} #end for j
 	}#end for i
 	savg=savg/count
-
+	for(b in 1:nbasin){
+		savg[b]=max(minslope,savg[b]) #make sure the average slope is >=savg
+	}
+	savg[is.na(savg)]=minslope
+	
 	rivlist=which(rivermask==1)
 	nriv=length(rivlist)
 	#fill in the river slopes with the average for their subbasin
@@ -517,8 +524,8 @@ if(river_method==2){
 			#setting the secondary slopes along the river
 			# By taking the inverse of the mask and adding the scale slope to the inital slope
 			# This means it will add zero if its the primary flow direcito and it will add the scalaed secondary if not
-			slopex2[rtemp]=slopex2[rtemp] + savg[sbtemp]*abs(1-abs(xmask[rtemp]))*xsign[rtemp]
-			slopey2[rtemp]=slopey2[rtemp] + savg[sbtemp]*abs(1-abs(ymask[rtemp]))*ysign[rtemp]
+			slopex2[rtemp]=slopex2[rtemp] + savg[sbtemp]*abs(1-abs(xmask[rtemp]))*xsign[rtemp]*river_secondaryTH
+			slopey2[rtemp]=slopey2[rtemp] + savg[sbtemp]*abs(1-abs(ymask[rtemp]))*ysign[rtemp]*river_secondaryTH
 			
 		} #end if
 	}#end for i in 1:nriv
@@ -535,18 +542,24 @@ if(river_method==3){
 	#Get the signs of the slopes before averaging to use in the secondary slope scaling
 	xsign=sign(slopex2)
 	ysign=sign(slopey2)
+	xsign[xsign==0]=1 # for zero slopes default to positive
+	ysign[ysign==0]=1 #for zero slopes default to positive
 	
 	#calculate the subbasin average slope
 	#NEED to sort out for x list and ylist so just averaging the primary
 	for(i in 1:nx){
 		for(j in 1:ny){
 			if(subbasins[i,j]>0 & rivermask[i,j]==1){
-				savg[subbasins[i,j]]=savg[subbasins[i,j]]+abs(slopex2[i,j])*abs(xmask[i,j])+abs(slopey2[i,j])*abs(ymask[i,j])
+				#savg[subbasins[i,j]]=savg[subbasins[i,j]]+abs(slopex2[i,j])*abs(xmask[i,j])+abs(slopey2[i,j])*abs(ymask[i,j])
 				count[subbasins[i,j]]=count[subbasins[i,j]] + 1
 			} #end if
 		} #end for j
 	}#end for i
 	savg=savg/count
+	for(b in 1:nbasin){
+		savg[b]=max(minslope,savg[b]) #make sure the average slope is >=savg
+	}
+	savg[is.na(savg)]=minslope
 
 	rivlist=which(rivermask==1)
 	nriv=length(rivlist)
@@ -563,8 +576,8 @@ if(river_method==3){
 			#setting the secondary slopes along the river
 			# By taking the inverse of the mask and adding the scale slope to the inital slope
 			# This means it will add zero if its the primary flow direcito and it will add the scalaed secondary if not
-			slopex2[rtemp]=slopex2[rtemp] + savg[sbtemp]*abs(1-abs(xmask[rtemp]))*xsign[rtemp]
-			slopey2[rtemp]=slopey2[rtemp] + savg[sbtemp]*abs(1-abs(ymask[rtemp]))*ysign[rtemp]
+			slopex2[rtemp]=slopex2[rtemp] + savg[sbtemp]*abs(1-abs(xmask[rtemp]))*xsign[rtemp]*river_secondaryTH
+			slopey2[rtemp]=slopey2[rtemp] + savg[sbtemp]*abs(1-abs(ymask[rtemp]))*ysign[rtemp]*river_secondaryTH
 			
 		} #end if
 
