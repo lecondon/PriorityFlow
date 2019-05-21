@@ -380,7 +380,7 @@ for(k in 1:nrow(borlist)){
 	}
 }
 
-#filling in the missing values with an arbitrary direciotn
+#filling in the missing values with an arbitrary direction
 #need to circle back to this
 direction[missinglist]=4
 slopex2[missinglist]=-minslope
@@ -478,7 +478,7 @@ if(river_method==1){
 }
 }
 
-# Option 2: Assign the subbasin mean slope to the river cells in the primary direciton and set the secondary direction to 0
+# Option 2: Assign the subbasin mean slope to the river cells in the primary direction and set the secondary direction to 0
 if(river_method==2){
 	print("River Method 2: assigning average watershed slope to river cells by watershed")
 	print(paste("Scaling secondary slopes along river mask to", river_secondaryTH, "* primary slope"))
