@@ -1,22 +1,3 @@
-D4TraverseB=function(dem, queue, marked, mask, step, direction, basins, d4=c(1,2,3,4), printstep=F, nchunk=100, epsilon=0, printflag=F){
-
-####################################################################
-# PriorityFlow - Topographic Processing Toolkit for Hydrologic Models
-# Copyright (C) 2018  Laura Condon (lecondon@email.arizona.edu)
-# Contributors - Reed Maxwell (rmaxwell@mines.edu)
-
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation version 3 of the License
-
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>
-####################################################################
 #' Priority flow processing of D4 Stream Networks
 #'
 #' 'D4TraverB'  will process stream all network cells walking upstream on d4 neigbors
@@ -38,7 +19,9 @@ D4TraverseB=function(dem, queue, marked, mask, step, direction, basins, d4=c(1,2
 #' @param  basins a matrix of basin numbers that can be created by the initilizaiton script. If you input this every cell will be assigned the same basin as the cell that adds it
 #' @param  nchunk parameter for queue spliting. The top 'nchuck' values will be put into the primary queu for processing initilally.
 #' @param  printflag optional flag to print function progress
-#' 
+#' @export
+D4TraverseB=function(dem, queue, marked, mask, step, direction, basins, d4=c(1,2,3,4), printstep=F, nchunk=100, epsilon=0, printflag=F){
+
 t0=proc.time()
 nx=dim(dem)[1]
 ny=dim(dem)[2]

@@ -1,21 +1,3 @@
-StreamTraverse=function(dem, mask, queue, marked, step, direction,basins, d4=c(1,2,3,4), printstep=F, epsilon=0){
-####################################################################
-# PriorityFlow - Topographic Processing Toolkit for Hydrologic Models
-# Copyright (C) 2018  Laura Condon (lecondon@email.arizona.edu)
-# Contributors - Reed Maxwell (rmaxwell@mines.edu)
-
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation version 3 of the License
-
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>
-####################################################################
 #' DEM processing of stream networks
 #' 
 #' Function to process stream networks walking upstream on d4 neigbors in a river mask. Where no D4 neigbhors exist it looks for d8 neigbors and creates d4 bridges to these diagonal cells
@@ -29,8 +11,8 @@ StreamTraverse=function(dem, mask, queue, marked, step, direction,basins, d4=c(1
 #' @param step a matrix of the step number for cells that have been processed - defaults to all zeros
 #' @param direction a matrix of hte flow directions for cells that have been processed - defaults to all zeros
 #' @param basins a matrix of basin numbers that can be created by the initilizaiton script. If you input this every cell will be assigned the same basin as the cell that adds it
-
-
+#' @export
+StreamTraverse=function(dem, mask, queue, marked, step, direction,basins, d4=c(1,2,3,4), printstep=F, epsilon=0){
 
 nx=dim(dem)[1]
 ny=dim(dem)[2]

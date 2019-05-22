@@ -1,21 +1,3 @@
-SlopeCalcUP=function(dem, direction, dx, dy,  mask, borders, borderdir=1,  d4=c(1,2,3,4),  minslope=1e-5, maxslope=-1, secondaryTH=-1, river_method=0, river_secondaryTH=0, rivermask, subbasins, printflag=F, upflag=T){
-####################################################################
-# PriorityFlow - Topographic Processing Toolkit for Hydrologic Models
-# Copyright (C) 2018  Laura Condon (lecondon@email.arizona.edu)
-# Contributors - Reed Maxwell (rmaxwell@mines.edu)
-
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation version 3 of the License
-
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>
-####################################################################
 #'Calculate the slopes from a DEM
 #'
 #'This function will calculate slopes using standard or upwinding options and apply a range of smoothing options
@@ -34,16 +16,34 @@ SlopeCalcUP=function(dem, direction, dx, dy,  mask, borders, borderdir=1,  d4=c(
 #' @param printflag Print function progress
 #' @param upflag A flag indicating whether slope calc should be upwinded, defaults to T generating slopes that are consistent with ParFlow. If set to F then all slopes will be calcualted as [i+1]-[i]
 #' @section River Methods:
-	#' 0: default value, no special treatment for river cells
-	#' 
-	#' 1: Scale secondary slopes along the river (Note this requries a river mask and you must set a river_secondaryTH if you want this to be something other than 0)
-	#' 
-	#' 2: Apply watershed mean slope to each river reach (requires river mask and subbasins)
-	#' 
-	#' 3: Apply the stream mean slope to each reach (requires river mask and subbasins)
-	#' 
-	#' NOTE: the river mask can be different from the rivers that were used to create the subbasins if desired (i.e. if you want to use a threshold of 100 to create subbasins but then apply to river cells with a threshold of 50)
+#' 0: default value, no special treatment for river cells
+#' 
+#' 1: Scale secondary slopes along the river (Note this requries a river mask and you must set a river_secondaryTH if you want this to be something other than 0)
+#' 
+#' 2: Apply watershed mean slope to each river reach (requires river mask and subbasins)
+#' 
+#' 3: Apply the stream mean slope to each reach (requires river mask and subbasins)
+#' 
+#' NOTE: the river mask can be different from the rivers that were used to create the subbasins if desired (i.e. if you want to use a threshold of 100 to create subbasins but then apply to river cells with a threshold of 50)
+#' @export
+SlopeCalcUP=function(dem, direction, dx, dy,  mask, borders, borderdir=1,  d4=c(1,2,3,4),  minslope=1e-5, maxslope=-1, secondaryTH=-1, river_method=0, river_secondaryTH=0, rivermask, subbasins, printflag=F, upflag=T){
+####################################################################
+# PriorityFlow - Topographic Processing Toolkit for Hydrologic Models
+# Copyright (C) 2018  Laura Condon (lecondon@email.arizona.edu)
+# Contributors - Reed Maxwell (rmaxwell@mines.edu)
 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation version 3 of the License
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>
+####################################################################
 
 
 ###############################################################

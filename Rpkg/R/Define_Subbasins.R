@@ -1,4 +1,14 @@
+#' Defining Subbasins
+#' 
+#' Function to divide the domain into subbasins with individual stream segments
+#' @inheritParams D4TraverseB
+#' @inheritParams SlopeCalcUP
+#' @param area drainage areas for every cell
+#' @param riv_th threshold for the drainage area minimum used desigate cells as river cells, defaults to 50
+#' @param merge_th after all the subbasins have been defined subbasins with areas <merg_th will be combined with their downstream neighbors (Defaults to 0 which means no merging will take place)
+#' @export
 CalcSubbasins=function(direction, area, mask, d4=c(1,2,3,4), riv_th=50, printflag=F, merge_th=0){
+  
 ####################################################################
 # PriorityFlow - Topographic Processing Toolkit for Hydrologic Models
 # Copyright (C) 2018  Laura Condon (lecondon@email.arizona.edu)
@@ -17,15 +27,7 @@ CalcSubbasins=function(direction, area, mask, d4=c(1,2,3,4), riv_th=50, printfla
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
 ####################################################################
 
-#' Defining Subbasins
-#' 
-#' Function to divide the domain into subbasins with individual stream segments
-#' @inheritParams D4TraverseB
-#' @inheritParams SlopeCalcUP
-#' @param area drainage areas for every cell
-#' @param riv_th threshold for the drainage area minimum used desigate cells as river cells, defaults to 50
-#' @param merge_th after all the subbasins have been defined subbasins with areas <merg_th will be combined with their downstream neighbors (Defaults to 0 which means no merging will take place)
-  
+
 
 nx=nrow(direction)
 ny=ncol(direction)

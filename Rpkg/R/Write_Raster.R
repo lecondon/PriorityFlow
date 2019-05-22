@@ -1,3 +1,13 @@
+#' Write raster text file for ArcGIS
+#' 
+#'  Write.Raster - This function writes out a matrix with the six header rows needed for GIS rasters
+
+#' @param data Matrix of values for the raster
+#' @param fout file name for output
+#' @param xllcorner xlocation of lower left corner of domain (defaults to 0.0)
+#' @param yllcorner ylocation of lower left corner of domain (defaults to 0.0)
+#' @param naval value assigned to NAs in the raster (defaults to -999)
+#' @export
 write.raster=function(data, fout, xllcorner=0.0, yllcorner=0.0, dx=1000, naval=-999){
 
 ####################################################################
@@ -17,16 +27,6 @@ write.raster=function(data, fout, xllcorner=0.0, yllcorner=0.0, dx=1000, naval=-
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
 ####################################################################
-
-#' Write raster text file for ArcGIS
-#' 
-#'  Write.Raster - This function writes out a matrix with the six header rows needed for GIS rasters
-
-#' @param data Matrix of values for the raster
-#' @param fout file name for output
-#' @param xllcorner xlocation of lower left corner of domain (defaults to 0.0)
-#' @param yllcorner ylocation of lower left corner of domain (defaults to 0.0)
-#' @param naval value assigned to NAs in the raster (defaults to -999)
 
 header1=paste("ncols", ncol(data), sep="      ")
 header2=paste("nrows", nrow(data), sep="      ")

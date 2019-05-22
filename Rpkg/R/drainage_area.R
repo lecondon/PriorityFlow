@@ -1,29 +1,9 @@
-drainageArea=function(direction, mask, d4=c(1,2,3,4), printflag=F){
-####################################################################
-# PriorityFlow - Topographic Processing Toolkit for Hydrologic Models
-# Copyright (C) 2018  Laura Condon (lecondon@email.arizona.edu)
-# Contributors - Reed Maxwell (rmaxwell@mines.edu)
-
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation version 3 of the License
-
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>
-####################################################################
-
 #' Calculated drainage area
 #' 
 #' Calculates the number of cells draining to any cell given a flow direction file
-
 #' @inheritParams D4TraverseB
-
-
+#' @export
+drainageArea=function(direction, mask, d4=c(1,2,3,4), printflag=F){
 nx=nrow(direction)
 ny=ncol(direction)
 

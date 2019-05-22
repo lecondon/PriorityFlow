@@ -1,3 +1,11 @@
+#' Define upstream area from a point
+#' 
+#'Function to define the watershed for a point or set of outlet points based on the flow direction file
+
+#' @inheritParams D4TraverseB
+#' @param  outlets x,y coordinates of the outlet points or points to mask upstream areas for if there is just one point this can be input as c(x,y), if there are multiple points, this should be a matrix with a separate row for each point
+#' @param printflag Optional flag to print out the number of cells in the queue durring iterations, defaults to F
+#' @export
 DelinWatershed=function(outlets, direction, d4=c(1,2,3,4), printflag=F){
 ####################################################################
 # PriorityFlow - Topographic Processing Toolkit for Hydrologic Models
@@ -16,13 +24,6 @@ DelinWatershed=function(outlets, direction, d4=c(1,2,3,4), printflag=F){
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
 ####################################################################
-#' Define upstream area from a point
-#' 
-#'Function to define the watershed for a point or set of outlet points based on the flow direction file
-
-#' @inheritParams D4TraverseB
-#' @param  outlets x,y coordinates of the outlet points or points to mask upstream areas for if there is just one point this can be input as c(x,y), if there are multiple points, this should be a matrix with a separate row for each point
-#' @param printflag Optional flag to print out the number of cells in the queue durring iterations, defaults to F
 
 nx=nrow(direction)
 ny=ncol(direction)
