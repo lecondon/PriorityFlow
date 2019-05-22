@@ -31,11 +31,11 @@ D4TraverseB=function(dem, queue, marked, mask, step, direction, basins, d4=c(1,2
 #'
 #' @param  d4 directional numbering system: the numbers you want to assigne to down, left, top,right (defaults to 1,2,3,4)
 #' @param  printstep: if true it will print out the step number and the size of the queue
-#' @param epsilon: amount to add to filled areas to avoid creating flats, defaults to zero
-#' @param mask: Mask with ones for cells to be processed and zeros for everything else - defaults to a mask of all 1's
-#' @param step: a matrix of the step number for cells that have been processed - defaults to all zeros
-#' @param direction: a matrix of the flow directions for cells that have been processed - defaults to all zeros
-#' @param basins: a matrix of basin numbers that can be created by the initilizaiton script. If you input this every cell will be assigned the same basin as the cell that adds it
+#' @param epsilon amount to add to filled areas to avoid creating flats, defaults to zero
+#' @param mask Mask with ones for cells to be processed and zeros for everything else - defaults to a mask of all 1's
+#' @param step a matrix of the step number for cells that have been processed - defaults to all zeros
+#' @param direction a matrix of the flow directions for cells that have been processed - defaults to all zeros
+#' @param basins a matrix of basin numbers that can be created by the initilizaiton script. If you input this every cell will be assigned the same basin as the cell that adds it
 
 
 t0=proc.time()
