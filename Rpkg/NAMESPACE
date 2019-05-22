@@ -3,6 +3,7 @@
 export(CalcSubbasins)
 export(D4TraverseB)
 export(DelinWatershed)
+export(FixBorderDir)
 export(SlopeCalcUP)
 export(StreamTraverse)
 export(drainageArea)
