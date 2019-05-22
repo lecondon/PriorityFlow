@@ -6,6 +6,13 @@
 \usage{
 FixBorderDir(direction, dem, d4 = c(1, 2, 3, 4))
 }
+\arguments{
+\item{direction}{a matrix of the flow directions for cells that have been processed - defaults to all zeros}
+
+\item{dem}{Elevation matrix}
+
+\item{d4}{directional numbering system: the numbers you want to assigne to down, left, top,right (defaults to 1,2,3,4)}
+}
 \description{
 Oringinally all border cells are initialized to point out of the domain. This script checks the slopes and areas to determine if they need to swap
 }

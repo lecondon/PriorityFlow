@@ -2,6 +2,7 @@ FixBorderDir=function(direction, dem, d4=c(1,2,3,4)){
 #/Fix the directions of border cells
 #'Oringinally all border cells are initialized to point out of the domain. This script checks the slopes and areas to determine if they need to swap
 
+#' @inheritParams D4TraverseB
 
 #If its a rectangle just calcualte the slopes the internal edges of the boundary cell and use this to determine which way it should go
 	ny=ncol(direction)

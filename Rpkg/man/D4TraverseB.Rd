@@ -5,12 +5,15 @@
 \title{Priority flow processing of D4 Stream Networks}
 \usage{
 D4TraverseB(dem, queue, marked, mask, step, direction, basins, d4 = c(1,
-  2, 3, 4), printstep = F, nchunk = 100, epsilon = 0)
+  2, 3, 4), printstep = F, nchunk = 100, epsilon = 0,
+  printflag = F)
 }
 \arguments{
 \item{dem}{Elevation matrix}
 
 \item{queue}{a priority queue to start from three columns, x, y, elevation}
+
+\item{marked}{a matrix of which cells have been marked already}
 
 \item{mask}{Mask with ones for cells to be processed and zeros for everything else - defaults to a mask of all 1's}
 
@@ -22,11 +25,13 @@ D4TraverseB(dem, queue, marked, mask, step, direction, basins, d4 = c(1,
 
 \item{d4}{directional numbering system: the numbers you want to assigne to down, left, top,right (defaults to 1,2,3,4)}
 
+\item{printstep}{if true it will print out the step number and the size of the queue}
+
+\item{nchunk}{parameter for queue spliting. The top 'nchuck' values will be put into the primary queu for processing initilally.}
+
 \item{epsilon}{amount to add to filled areas to avoid creating flats, defaults to zero}
 
-\item{marked:}{a matrix of which cells have been marked already}
-
-\item{printstep:}{if true it will print out the step number and the size of the queue}
+\item{printflag}{optional flag to print function progress}
 }
 \description{
 'D4TraverB'  will process stream all network cells walking upstream on d4 neigbors

@@ -4,11 +4,8 @@
 \name{PriorityFlow-package}
 \alias{PriorityFlow}
 \alias{PriorityFlow-package}
-\title{PriorityFlow: What the package does (short line)}
+\title{PriorityFlow: Toolkit for topographic processing for hydrologic models}
 \description{
-More about what it does (maybe more than one line)
-}
-\details{
 PriorityFlow is a toolkit for topographic processing for hydrologic models. 
 This repo contains a set of R Functions and example workflow scripts.
 }

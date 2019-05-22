@@ -1,10 +1,10 @@
 Package: PriorityFlow
 Type: Package
-Title: What the package does (short line)
+Title: Toolkit for topographic processing for hydrologic models
 Version: 1.0
 Date: 2019-05-21
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
+Author: Laura Condon & Reed Maxwell
+Maintainer: Laura Condon <lecondon@email.arizona.edu>
 Description: More about what it does (maybe more than one line)
 License: What license is it under?
 RoxygenNote: 6.1.1
