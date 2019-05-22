@@ -1,10 +1,11 @@
-readpfb=function(filename, verbose){
-  
 #' Read PFB files
 #' Function to Read ParFlow Binary Files into R
 #' 
 #' @param filename Name of file to read
-#' @param verbose Optional to turn on print statements
+#' @param verbose Optional to turn on print statement
+#' @export 
+readpfb=function(filename, verbose){
+
 
 # code to read parflow binary in R
 # RMM 10-19-13

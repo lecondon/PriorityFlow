@@ -10,7 +10,7 @@ readpfb(filename, verbose)
 \arguments{
 \item{filename}{Name of file to read}
 
-\item{verbose}{Optional to turn on print statements}
+\item{verbose}{Optional to turn on print statement}
 }
 \description{
 Read PFB files
