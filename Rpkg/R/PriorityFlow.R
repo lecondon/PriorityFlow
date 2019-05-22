@@ -1,6 +1,6 @@
 #' @details
-#' The only function you're likely to need from roxygen2 is [roxygenize()]. 
-#' Otherwise refer to the vignettes to see how to format the documentation.
+#'PriorityFlow is a toolkit for topographic processing for hydrologic models. 
+#'This repo contains a set of R Functions and example workflow scripts.
 #' @keywords internal
 "_PACKAGE"
 #> [1] "_PACKAGE"
