@@ -1,3 +1,8 @@
+#' Identify border cells
+#' Function that reads in a mask and returns a mask of the border cells for the irrigular boundary. 
+
+#' @param mask_mat Matrix mask with values of 0 for cells outside the domain 1 for cells inside the domain
+#' @export 
 GetBorder=function(mask_mat){
 	####################################################################
 	# PriorityFlow - Topographic Processing Toolkit for Hydrologic Models
@@ -16,10 +21,6 @@ GetBorder=function(mask_mat){
 	# You should have received a copy of the GNU General Public License
 	# along with this program.  If not, see <http://www.gnu.org/licenses/>
 	####################################################################
-#' Identify border cells
-#' Function that reads in a mask and returns a mask of the border cells for the irrigular boundary. 
-
-#' @param mask_mat Matrix mask with values of 0 for cells outside the domain 1 for cells inside the domain
 
 	ny=nrow(mask_mat)
 	nx=ncol(mask_mat)

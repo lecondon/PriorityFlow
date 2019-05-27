@@ -1,3 +1,12 @@
+#' Initilze queue for topographic processing
+#' 
+#' Sets up a queue and initilizes marked and step matrices for DEM processing
+#'
+#' @inheritParams D4TraverseB
+#' @param initmask Mask of the same dimesions of dem denoting a subset of cells to be considered for the queue (e.g. if you want to setup a run starting with only river cells). Note: if no mask is included every border cell will be added to the queue
+#' @param domainmask Mask of the domain extent to be considered. If no domain mask is provided boundaries will be calcualted from the rectangular extent
+#' @param border Alternatively you can input your own border rathern than having it be calculated from the domain mask. For example if you want to have the river network and the borders combined you can input this as a border.
+#' @export
 InitQueue=function(dem, initmask, domainmask, border){
 	
 ####################################################################
@@ -17,14 +26,6 @@ InitQueue=function(dem, initmask, domainmask, border){
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
 ####################################################################
-#' Initilze queue for topographic processing
-#' 
-#' Sets up a queue and initilizes marked and step matrices for DEM processing
-#'
-#' @inheritParams D4TraverseB
-#' @param initmask Mask of the same dimesions of dem denoting a subset of cells to be considered for the queue (e.g. if you want to setup a run starting with only river cells). Note: if no mask is included every border cell will be added to the queue
-#' @param domainmask Mask of the domain extent to be considered. If no domain mask is provided boundaries will be calcualted from the rectangular extent
-#' @param border Alternatively you can input your own border rathern than having it be calculated from the domain mask. For example if you want to have the river network and the borders combined you can input this as a border.
 
 #initilize queue and matrices
 ny=ncol(dem)

@@ -16,6 +16,8 @@ write.raster(data, fout, xllcorner = 0, yllcorner = 0, dx = 1000,
 
 \item{yllcorner}{ylocation of lower left corner of domain (defaults to 0.0)}
 
+\item{dx}{grid cell lateral dimension (defaults to 1000)}
+
 \item{naval}{value assigned to NAs in the raster (defaults to -999)}
 }
 \description{

@@ -1,3 +1,10 @@
+#' Find orphan branches
+#' 
+#' Function to look for unprocessed river cells that have d8 neigbors on the river network or on the boundary
+
+#' @inheritParams D4TraverseB
+#' @param marked Matrix of grid cells that have been processed
+#' @export
 FindOrphan=function(dem, mask, marked){
 ####################################################################
 # PriorityFlow - Topographic Processing Toolkit for Hydrologic Models
@@ -16,12 +23,6 @@ FindOrphan=function(dem, mask, marked){
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
 ####################################################################
-#' Find orphan branches
-#' 
-#' Function to look for unprocessed river cells that have d8 neigbors on the river network or on the boundary
-
-#' @inheritParams D4TraverseB
-#' @param marked Matrix of grid cells that have been processed
 
 #matrix of offsets in x and y for D8 neigbors
 kd=matrix(0, ncol=2, nrow=8)

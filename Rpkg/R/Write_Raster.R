@@ -7,6 +7,7 @@
 #' @param xllcorner xlocation of lower left corner of domain (defaults to 0.0)
 #' @param yllcorner ylocation of lower left corner of domain (defaults to 0.0)
 #' @param naval value assigned to NAs in the raster (defaults to -999)
+#' @param dx grid cell lateral dimension (defaults to 1000)
 #' @export
 write.raster=function(data, fout, xllcorner=0.0, yllcorner=0.0, dx=1000, naval=-999){
 
