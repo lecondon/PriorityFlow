@@ -1,6 +1,6 @@
 PriorityFlow
 =======
-*PriorityFlow* is a toolkit for topographic processing for hydrologic models. This repo contains a set of R Functions and example workflow scripts.
+*PriorityFlow* is a toolkit for topographic processing for hydrologic models. This repo contains a set of R Functions and example workflow scripts. The functions are also available as an R package (see instructions below)
 
 #### Development Team
 + Laura Condon (lecondon@email.arizona.edu)
@@ -10,6 +10,25 @@ PriorityFlow
 For more details on the model and if you use PriorityFlow in published work please cite the following reference:  
    *Condon, LE and RM Maxwell (2019). Modified priority flood and global slope enforcement algorithm for topographic processing in physically based hydrologic modeling applications. Computers & Geosciences, [doi:10.1016/j.cageo.2019.01.20](https://doi.org/10.1016/j.cageo.2019.01.020).*
 
+Installing the R-package
+--------------------
+If you would like to use the functions as an R-package rather than cloning and sourcing you can do the following:
+1. To use R packages from GitHub you need to have the devtools package installed:
+```
+install.packages('devtools’)
+library(devtools)
+```
+
+2. Next you can install the PriorityFlow package:
+```
+install_github("lecondon/PriorityFlow", subdir="Rpkg”)
+library('PriorityFlow’)
+```
+3. If its installed correctly you should be able to run help and get information. Clicking on the index from here will give you a list of all of the available functions.
+```
+help('PriorityFlow’)
+```
+*Note: If you are using the R-package then you can get rid of the 'source' calls at the top of the example workflows because the functions will already be loaded with the library.
 
 DEM Processing
 --------------------
