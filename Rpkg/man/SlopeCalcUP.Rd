@@ -40,7 +40,7 @@ SlopeCalcUP(dem, direction, dx, dy, mask, borders, borderdir = 1,
 
 \item{printflag}{Print function progress}
 
-\item{upflag}{A flag indicating whether slope calc should be upwinded, defaults to T generating slopes that are consistent with ParFlow. If set to F then all slopes will be calcualted as [i+1]-[i]}
+\item{upflag}{A flag indicating whether slope calc should be downwinded to be consitent with the upwinding in the ParFlow OverlandFlow Boundary condition it defaults to T. If set to F then all slopes will be calcualted as [i+1]-[i] with no adjustments. This approach is consistent with the OverlandKin boundary condition in  ParFlow.}
 }
 \description{
 This function will calculate slopes using standard or upwinding options and apply a range of smoothing options
