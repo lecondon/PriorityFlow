@@ -14,7 +14,8 @@
 #' @param river_method Optional method to treat river cells differently from the rest of the domain
 #' @param rivermask Mask with 1 for river cells and 0 for other cells
 #' @param printflag Print function progress
-#' @param upflag A flag indicating whether slope calc should be upwinded, defaults to T generating slopes that are consistent with ParFlow. If set to F then all slopes will be calcualted as [i+1]-[i]
+#' @param upflag A flag indicating whether slope calc should be downwinded to be consitent with the upwinding in the ParFlow OverlandFlow Boundary condition it defaults to T. If set to F then all slopes will be calcualted as [i+1]-[i] with no adjustments. This approach is consistent with the OverlandKin boundary condition in  ParFlow. 
+
 #' @section River Methods:
 #' 0: default value, no special treatment for river cells
 #'

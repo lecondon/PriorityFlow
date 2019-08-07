@@ -53,8 +53,9 @@ SlopeCalcUP=function(dem, direction, dx, dy,  mask, borders, borderdir=1,  d4=c(
 
 #rivermask - Mask with 1 for river cells and 0 for other cells
 
-#upflag - A flag indicating whether slope calc should be upwinded, defaults to T generating slopes that are consistent with ParFlow. If set to F
-#    then all slopes will be calcualted as [i+1]-[i]
+#upflag - A flag indicating whether slope calc should be downwinded to be consitent with the upwinding in the ParFlow OverlandFlow Boundary condition
+#     it defaults to T. If set to F then all slopes will be calcualted as [i+1]-[i] with no adjustments. This approach
+#     is consistent with the OverlandKin boundary condition in  ParFlow. 
 
 
 ###############################################################
