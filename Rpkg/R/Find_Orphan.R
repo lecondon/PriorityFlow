@@ -38,6 +38,9 @@ missed=matrix(0,nx,ny)
 missed[mlist]=1
 #print(paste(sum(missed), "channel cells missed"))
 
+nx=dim(dem)[1]
+ny=dim(dem)[2]
+
 #Check and see if missed cells have D8 neigbors
 #that were marked in the last traverse
 #count the number of marked cells by summing the marked mask shifted for each of the d8 directions

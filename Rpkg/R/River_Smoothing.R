@@ -1,20 +1,18 @@
 #'Apply smoothing to a DEM along a pre-defined stream network
 #'
-#'This function will apply a range of smoothing options to a DEM along a stream network. It requires pre-defined stream segments 
+#'This function will smooth a DEM along a stream network. It requires pre-defined stream segments 
 #'and subbasins which can be obtained using the \code{\link{CalcSubbasins}} function.
 
 #' @inheritParams CalcSubbasins
+#' @inheritParams D4TraverseB
 #' @param  river.summary A table summarizing the stream segments in a domain with the following. 
-#'  it shoudl have 1 row per stream segmentand the following 7 columns: (1) subbasin number, (2) x and (3) y index
+#'  it should have 1 row per stream segmentand the following 7 columns: (1) subbasin number, (2) x and (3) y index
 #'  of the upstream end of the stream segment, (4) x and (5) y index of the downstream eand of the river segement,
 #'  (6) the subbasin number for the downstream basin, -1 indicates a subbasin draining out of the domain
 #'  (7) drainage area of the subbasin 
-#'  @param river.segments A nx by ny matrix indicating the subbasin number for with for all grid cells on the river network 
+#' @param river.segments A nx by ny matrix indicating the subbasin number for with for all grid cells on the river network 
 #'      ( (all cells not on the river network shoudl be 0)
-#'      
-#' @section River Methods:
-#' Add TEXT HERE
-#'
+#' @param epsilon the minimum elevation difference between cells walking upstream from the river network.  
 #' @export
 #' 
 RiverSmooth=function(dem, direction, mask, river.summary, river.segments, epsilon=0.01, d4=c(1,2,3,4)){
@@ -42,7 +40,7 @@ RiverSmooth=function(dem, direction, mask, river.summary, river.segments, epsilo
   #subasins=subbasin$subbasins
 
   ##################
-  source("~/Dropbox/CONUS_Share/Topography_Testing/SmallTestDomain/Slope_processingNew/functions/Fix_Drainage.R", local=TRUE)
+  #source("~/Dropbox/CONUS_Share/Topography_Testing/SmallTestDomain/Slope_processingNew/functions/Fix_Drainage.R", local=TRUE)
   #D4 neighbors
   #Rows: down, left top right
   #Colums: (1)deltax, (2)deltay, direction number if you are waking (3)downstream, and  (4)upstream

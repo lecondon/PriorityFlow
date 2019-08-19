@@ -5,6 +5,6 @@ Version: 1.0
 Date: 2019-05-21
 Author: Laura Condon & Reed Maxwell
 Maintainer: Laura Condon <lecondon@email.arizona.edu>
-Description: More about what it does (maybe more than one line)
-License: What license is it under?
+Description: An R package for processing topography for hydrologic modeling. 
+License: GNU General Public License
 RoxygenNote: 6.1.1

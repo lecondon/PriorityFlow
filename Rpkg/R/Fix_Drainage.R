@@ -13,6 +13,7 @@
 
 #' @inheritParams CalcSubbasins
 #' @inheritParams RiverSmooth
+#' @param startpoint the x,y index of a grid cell to start walking upstream from
 #' @export
 #' 
 FixDrainage=function(dem, direction, mask, epsilon, startpoint, d4=c(1,2,3,4)){
