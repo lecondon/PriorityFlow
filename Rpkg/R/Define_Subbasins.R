@@ -26,9 +26,6 @@ CalcSubbasins=function(direction, area, mask, d4=c(1,2,3,4), riv_th=50, printfla
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
 ####################################################################
-
-
-
 nx=nrow(direction)
 ny=ncol(direction)
 
@@ -65,9 +62,16 @@ kd[,2]=c(-1,0,1,0)
 rivers=area
 rivers[area<riv_th]=0
 rivers[area>=riv_th]=1
+end=F
+if(sum(rivers)==0)
+{
+  print("Area Threshold too high.  No river cells found. Please select a lower riv_th value")
+  end=T
+}
 #print(sum(rivers))
 #image.plot(rivers)
 
+if(end==F){
 #make masks of which cells drain down, up, left right
 down=up=left=right=matrix(0, nrow=nx, ncol=ny)
 down[which(direction==d4[1])]=1
@@ -178,7 +182,7 @@ for(i in 1:nheadwater){
 	 }
 	} # end while
 	if(first==T){
-		summary=summarytemp
+		summary=matrix(summarytemp, ncol=7, byrow=T)
 		first=F
 	}else{
 		summary=rbind(summary, summarytemp)
@@ -284,7 +288,7 @@ if(merge_th>0){
 #maskcol=colorRampPalette(c('black', 'black'))
 #image.plot(subbasinA, zlim=c(35,50))
 #image.plot((test*2), add=T, col=maskcol(2), legend=F)
-
+}
 output_list=list("segments"=subbasin, "subbasins"=subbasinA, "RiverMask"=rivers, "summary"=summary)
 
 return(output_list)
