@@ -5,7 +5,7 @@
 \title{Apply smoothing to a DEM along a pre-defined stream network}
 \usage{
 RiverSmooth(dem, direction, mask, river.summary, river.segments,
-  epsilon = 0.01, d4 = c(1, 2, 3, 4))
+  epsilon = 0.01, d4 = c(1, 2, 3, 4), printflag = F)
 }
 \arguments{
 \item{dem}{Elevation matrix}
@@ -26,6 +26,8 @@ of the upstream end of the stream segment, (4) x and (5) y index of the downstre
 \item{epsilon}{the minimum elevation difference between cells walking upstream from the river network.}
 
 \item{d4}{directional numbering system: the numbers you want to assigne to down, left, top,right (defaults to 1,2,3,4)}
+
+\item{printflag}{optional flag to print function progress}
 }
 \description{
 This function will smooth a DEM along a stream network. It requires pre-defined stream segments 
