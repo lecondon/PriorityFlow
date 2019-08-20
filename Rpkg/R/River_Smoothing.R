@@ -15,7 +15,7 @@
 #' @param epsilon the minimum elevation difference between cells walking upstream from the river network.  
 #' @export
 #' 
-RiverSmooth=function(dem, direction, mask, river.summary, river.segments, epsilon=0.01, d4=c(1,2,3,4)){
+RiverSmooth=function(dem, direction, mask, river.summary, river.segments, epsilon=0.01, d4=c(1,2,3,4), printflag=F){
   ####################################################################
   # PriorityFlow - Topographic Processing Toolkit for Hydrologic Models
   # Copyright (C) 2018  Laura Condon (lecondon@email.arizona.edu)
@@ -105,26 +105,41 @@ RiverSmooth=function(dem, direction, mask, river.summary, river.segments, epsilo
       bdir=dir2[river.summary[indr,4], river.summary[indr,5]]
       bottom=dem2[(river.summary[indr,4]+kd[bdir,1]), (river.summary[indr,5]+kd[bdir,2])]
     }
-    print(paste("River segment:",r))
-    print(paste("Start:",river.summary[indr,2], river.summary[indr,3], round(top,1)))
-    print(paste("End:",river.summary[indr,4], river.summary[indr,5], round(bottom,1)))
+    
+    if(top<bottom){
+      #calculate the delta from the original dem
+      top0=dem[river.summary[indr,2], river.summary[indr,3]]
+      bdir=dir2[river.summary[indr,4], river.summary[indr,5]]
+      bottom0=dem[(river.summary[indr,4]+kd[bdir,1]), (river.summary[indr,5]+kd[bdir,2])]
+      
+      #use this delta from the original dem to adjust the top elevation
+      delta=(top0-bottom0)/(length)
+      top=bottom+delta*length
+      if(printflag==T){
+        print(paste("River top elevation<river bottom elevation for segment", r))
+        print(paste("Original top", round(top0,2), "and original bottom", round(bottom0,2)))
+        print(paste("Adjusting the top elevation from", round(top0,2), "top", round(top,2)))
+      }
+    }
+    
+    if(printflag==T){
+      print(paste("River segment:",r))
+      print(paste("Start:",river.summary[indr,2], river.summary[indr,3], round(top,1)))
+      print(paste("End:",river.summary[indr,4], river.summary[indr,5], round(bottom,1)))
+    }
 
     #walk from top to bottom smoothing out the river cells
     indx=river.summary[indr,2]
     indy=river.summary[indr,3]
     marked.matrix[indx,indy]=marked.matrix[indx,indy]+1
 
-    if(river.segments[indx,indy]!=r){
-      #length=length+1
-      print("CHECK- found headwater error")
-    } #add one to the river length if the top cell has a different river number (this happens with non-headwater segments)
     if(length>1){delta=(top-bottom)/(length)}else{delta=0}
     if(delta<0){
-      print(paste("ERROR: River top elevation<river bottom elevation for segment", r))
-      print("Applying a delta of 0 for this reach")
+      print(paste("Warning: Calculated delta < 0, setting delta to 0 for segment", r))
       delta=0
     }
     temp=top
+    
     if(length>1){
       for(i in 2:length){
         #print(i)
