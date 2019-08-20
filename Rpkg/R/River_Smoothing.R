@@ -115,6 +115,7 @@ RiverSmooth=function(dem, direction, mask, river.summary, river.segments, epsilo
       #use this delta from the original dem to adjust the top elevation
       delta=(top0-bottom0)/(length)
       top=bottom+delta*length
+      dem2[river.summary[indr,2], river.summary[indr,3]]=top
       if(printflag==T){
         print(paste("River top elevation<river bottom elevation for segment", r))
         print(paste("Original top", round(top0,2), "and original bottom", round(bottom0,2)))
