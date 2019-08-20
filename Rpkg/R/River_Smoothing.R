@@ -92,34 +92,39 @@ RiverSmooth=function(dem, direction, mask, river.summary, river.segments, epsilo
     indr=queue[1]
     r=river.summary[indr,1] #river segment number
     rdown=river.summary[indr,6]
+    length=river.length[r]
     
     #find the top and bottom elevations of the current river segment
-    top=dem[river.summary[indr,2], river.summary[indr,3]]
+    top=dem2[river.summary[indr,2], river.summary[indr,3]]
     #if its a terminal reach then the bottom elevation will be the bottom of the reach
     if(rdown==(-1)){
-      bottom=dem[river.summary[indr,4], river.summary[indr,5]]
+      bottom=dem2[river.summary[indr,4], river.summary[indr,5]]
+      length=length-1
     } else{
     #if not then use the elevation downstream of the bottom point of the reach
       bdir=dir2[river.summary[indr,4], river.summary[indr,5]]
-      bottom=dem[(river.summary[indr,4]+kd[bdir,1]), (river.summary[indr,5]+kd[bdir,2])]
+      bottom=dem2[(river.summary[indr,4]+kd[bdir,1]), (river.summary[indr,5]+kd[bdir,2])]
     }
-    #print(paste("River segment:",r))
-    #print(paste("Start:",river.summary[indr,2], river.summary[indr,3], round(top,1)))
-    #print(paste("End:",river.summary[indr,4], river.summary[indr,5], round(bottom,1)))
+    print(paste("River segment:",r))
+    print(paste("Start:",river.summary[indr,2], river.summary[indr,3], round(top,1)))
+    print(paste("End:",river.summary[indr,4], river.summary[indr,5], round(bottom,1)))
 
     #walk from top to bottom smoothing out the river cells
-    temp=top
     indx=river.summary[indr,2]
     indy=river.summary[indr,3]
     marked.matrix[indx,indy]=marked.matrix[indx,indy]+1
-    length=river.length[r]
-    if(river.segments[indx,indy]!=r){length=length+1} #add one to the river length if the top cell has a different river number (this happens with non-headwater segments)
-    if(length>1){delta=(top-bottom)/(length-1)}else{delta=0}
+
+    if(river.segments[indx,indy]!=r){
+      #length=length+1
+      print("CHECK- found headwater error")
+    } #add one to the river length if the top cell has a different river number (this happens with non-headwater segments)
+    if(length>1){delta=(top-bottom)/(length)}else{delta=0}
     if(delta<0){
       print(paste("ERROR: River top elevation<river bottom elevation for segment", r))
       print("Applying a delta of 0 for this reach")
       delta=0
     }
+    temp=top
     if(length>1){
       for(i in 2:length){
         #print(i)
@@ -130,7 +135,7 @@ RiverSmooth=function(dem, direction, mask, river.summary, river.segments, epsilo
         downindy=indy+kd[dirtemp,2]
         dem2[downindx,downindy]=temp
         
-        #move to the dlownstream point
+        #move to the downstream point
         indx=downindx
         indy=downindy
         marked.matrix[indx,indy]=marked.matrix[indx,indy]+1

@@ -153,7 +153,8 @@ for(i in 1:nheadwater){
 				}else{
 					summary=rbind(summary, summarytemp)
 				}
-				summarytemp=c(index, xtemp, ytemp, rep(0,4))
+				#summarytemp=c(index, xtemp, ytemp, rep(0,4))
+				summarytemp=c(index, xds, yds, rep(0,4))
 
 				#print(paste("new index", index))
 			}
@@ -264,7 +265,11 @@ if(merge_th>0){
 			subbasinA[ilistA]=bas2
 
 			#adjust the summary matrix for the downstream basin
-			summary[which(summary[,1]==bas2),7]=summary[which(summary[,1]==bas2),7] + summary[i,7]
+			#increment the downstream basins drainage area
+			summary[which(summary[,1]==bas2),7]=summary[which(summary[,1]==bas2),7] + summary[i,7] 
+			#change the locaiton of the downtream basins headwater cell
+			summary[which(summary[,1]==bas2),2]=summary[i,2]
+			summary[which(summary[,1]==bas2),3]=summary[i,3]
 
 			#Change the downstream basin number for any upstream basins to downstream basin
 			uplist=which(summary[,6]==bas1)
