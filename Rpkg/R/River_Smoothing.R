@@ -71,7 +71,8 @@ RiverSmooth=function(dem, direction, mask, river.summary, river.segments, epsilo
   hillmask[which(river.segments>0)]=0
   
   #First make a list of all the termial river reaches
-  queue=which(river.summary[,6]==(-1))
+  #queue=which(river.summary[,6]==(-1))
+  queue=which(river.summary[,6]<=(0))
   if(length(queue)>0){active=TRUE}else{print("No terminal river segments provided, not adjusting DEM")}
   
   #start a new dem
@@ -97,7 +98,8 @@ RiverSmooth=function(dem, direction, mask, river.summary, river.segments, epsilo
     #find the top and bottom elevations of the current river segment
     top=dem2[river.summary[indr,2], river.summary[indr,3]]
     #if its a terminal reach then the bottom elevation will be the bottom of the reach
-    if(rdown==(-1)){
+    #if(rdown==(-1)){
+    if(rdown<=0){
       bottom=dem2[river.summary[indr,4], river.summary[indr,5]]
       length=length-1
     } else{
