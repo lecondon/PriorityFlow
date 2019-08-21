@@ -94,7 +94,7 @@ slopey1[,1:(ny-1)]=(demMask[,2:ny]-demMask[, 1:(ny-1)])/dy
 #slopey1[,ny]=slopey1[,(ny-1)]
 
 #########################################################
-#Assign flow directions and slopes for the upper and right border cells
+#Assign slopes for the upper and right border cells (i.e. where slopes can't be calcualted)
 #Look for any upper and left borders where the slope couldn't be calculated and 
 #repate the i-1 or j-1 slope
 slopex2=slopex1
@@ -161,7 +161,7 @@ rightlist.arr=which(direction==d4[4], arr.ind=T)
 #Because the slopes are face centered - a primary flow direction up or right will mean that the slope for
 #that cell is a primary slope
 #However a flow direction down or left indicates that the slope  of the i-1 (or j-1) cell is a primary slope
-#Thus some celss may have primary slopes in x and y while some may have them in neither even though every 
+#Thus some cells may have primary slopes in x and y while some may have them in neither even though every 
 #grid cell only has one direction. 
 ymask=xmask=matrix(0, nrow=nx, ncol=ny)
 #mask of cells with primary flow in x and y direction, 
