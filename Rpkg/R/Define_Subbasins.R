@@ -95,7 +95,6 @@ headwater[which(draincount==0 & rivers==1)]=1
 #give values outside the mask and on the border a negative count so they aren't processed
 marked[which(mask==0)]=1
 
-
 #start with all the headwater cells (i.e. cells with zero upstream neigbors)
 blist=cbind(which(headwater==1), which(headwater==1, arr.ind=T))
 nheadwater=nrow(blist)
