@@ -9,7 +9,8 @@ InitQueue(dem, initmask, domainmask, border)
 \arguments{
 \item{dem}{Elevation matrix}
 
-\item{initmask}{Mask of the same dimesions of dem denoting a subset of cells to be considered for the queue (e.g. if you want to setup a run starting with only river cells). Note: if no mask is included every border cell will be added to the queue}
+\item{initmask}{Mask of the same dimensions of dem denoting a subset of cells to be considered for the queue (e.g. if you want to setup a run starting with only river cells). 
+Note: if no init mask is included every border cell will be added to the queue}
 
 \item{domainmask}{Mask of the domain extent to be considered. If no domain mask is provided boundaries will be calcualted from the rectangular extent}
 
