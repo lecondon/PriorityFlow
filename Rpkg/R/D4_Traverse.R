@@ -90,9 +90,13 @@ demC=queue1[pick,3]
 # Look for D4 neighbor cells that are on the mask and add to queue
 
 count=0
+#check if the original cell is on the border
+bdrchk=direction[xC,yC]
+
 for(k in 1:4){
 	xk=xC+kd[k,1]
 	yk=yC+kd[k,2]
+	
 	#print(c(xk, yk))
 	#check that the neigbhor is inside the domain and on the mask
 	#t3=proc.time()
@@ -118,8 +122,22 @@ for(k in 1:4){
 				direction[xk,yk]=kd[k,3]
 				basins[xk,yk]=basins[xC,yC]
 				count=count+1
+				
+				#if the original  cell is on the border and lacking a flow direction then 
+				#give it the direction of the cell it just added it 
+				#as long as this points out of the domain
+				if(is.na(bdrchk)==T){
+				  #xy ylocation of the cell opposite the cell being proccesed
+				  xO=xC-kd[k,1]
+				  yO=yC-kd[k,2]
+				  #if this is outside the grid or the mask then apply the direction to this cell
+				    if(yO*xO==0 | yO>ny | xO>nx ){direction[xC,yC]=kd[k,3]}else{
+				      if(mask[xO,yO]==0){direction[xC,yC]=kd[k,3]}
+				    }
+				  }
 				#nqueue=nqueue+1
 			}
+	  
 		}
 	#t4=proc.time()
 }
@@ -189,6 +207,35 @@ nstep=nstep+1
 if(printstep){print(paste("Step:", nstep, "NQueue:", nqueue, "Queue2:", nqueue2, "Qtemp:",length(queuetemp)/3 ))}
 
 }
+
+#after its all done do a final pass to fill in flow directions for any 
+#of the cells on the initial queue which didn't get a flow direction
+#assigned because they didn't add any neigbors to the queue
+bordermiss=which(is.na(direction)==T & mask==1, arr.ind=T)
+
+#make a padded dem repeating the edge values
+dem_pad=dem
+dem_pad=rbind(dem[1,],dem_pad, dem[nx,])
+dem_pad=cbind(dem_pad[,1],dem_pad, dem_pad[,ny])
+
+#loop over  border cells and asign a flow directon based on steepest neigbhor
+for(b in 1:nrow(bordermiss)){
+  bx=bordermiss[b,1]+1
+  by=bordermiss[b,2]+1
+  #caclcualte the elevation diference to every d4 neigboring cell
+  dem_negh=c((dem[bx-1,by-1] - dem_pad[bx+kd[1,1], by+kd[1,2]]), 
+             (dem[bx-1,by-1] - dem_pad[bx+kd[2,1], by+kd[2,2]]),
+             (dem[bx-1,by-1] - dem_pad[bx+kd[3,1], by+kd[3,2]]), 
+             (dem[bx-1,by-1] - dem_pad[bx+kd[4,1], by+kd[4,2]]))
+  #pick the neigbor with the biggest elevaiton difference
+  #note if there is a tie this will just pick the first
+  pick=which.max(abs(dem_negh))
+  #assigne the flow direction
+  if(dem_negh[pick]<0){
+    direction[bx-1,by-1]=kd[pick,3]
+  }else{direction[bx-1,by-1]=d4[pick]}
+
+} #end for b in bordermiss
 
 
 
