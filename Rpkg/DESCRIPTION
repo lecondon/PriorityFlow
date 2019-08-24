@@ -7,4 +7,5 @@ Author: Laura Condon & Reed Maxwell
 Maintainer: Laura Condon <lecondon@email.arizona.edu>
 Description: An R package for processing topography for hydrologic modeling. 
 License: GNU General Public License
+LazyData: true
 RoxygenNote: 6.1.1

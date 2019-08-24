@@ -1,21 +1,17 @@
 # Workflow Example 1: Rectangular domain no river mask
+# Calculating slopes with a downwinding approach  to be consisten with 
+# ParFlows OverlandFlow  boundary conditon. 
 # This example walks through the simplest case where
 # you have a rectangular domain and no river network specified a-priori
 # in this case the only input required is a DEM
 
 ##########################################
 #Source Libraries and functions
+#Note refer to the ReadMe on the Github repo for how to install the 
+#library if y ou haven't installed it yet: https://github.com/lecondon/PriorityFlow
+library("PriorityFlow")
 rm(list=ls())
 library('fields')
-source("./functions/D4_Traverse.R")
-source("./functions/Init_Queue.R")
-source("./functions/Stream_Traverse.R")
-source("./functions/Find_Orphan.R")
-source("./functions/drainage_area.R")
-source("./functions/Slope_Calc_Upwind.R")
-source("./functions/Get_Border.R")
-source("./functions/Define_Subbasins.R")
-source("./functions/Write_Raster.R")
 
 ##########################################
 #Settings
