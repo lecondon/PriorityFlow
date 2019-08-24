@@ -4,11 +4,8 @@
 \alias{SlopeCalStan}
 \title{Calculate the slopes from a DEM}
 \usage{
-SlopeCalStan(dem, direction, dx, dy, mask, borders, borderdir = 1,
-  adjust_borders = F, d4 = c(1, 2, 3, 4), minslope = 0,
-  maxslope = -1, secondaryTH = -1, river_method = 0,
-  river_secondaryTH = 0, rivermask, subbasins, printflag = F,
-  upflag = F)
+SlopeCalStan(dem, direction, dx, dy, mask, d4 = c(1, 2, 3, 4),
+  minslope = 0, maxslope = -1, secondaryTH = -1, printflag = F)
 }
 \arguments{
 \item{dem}{Elevation matrix}
@@ -19,31 +16,17 @@ SlopeCalStan(dem, direction, dx, dy, mask, borders, borderdir = 1,
 
 \item{mask}{Mask with ones for cells to be processed and zeros for everything else - defaults to a mask of all 1's}
 
-\item{borders}{A matrix with 1's for borders cells to default to pointing out, 2 to default to pointing in, and 0 for all non-border cells.}
-
-\item{borderdir}{Default value for border cells 1=point out, 2= point in}
-
-\item{adjust_borders}{Flag determining whether the border cells should be ajusted or not to point in a  specific direction}
-
 \item{d4}{directional numbering system: the numbers you want to assigne to down, left, top,right (defaults to 1,2,3,4)}
 
 \item{minslope}{Minimum absolute slope value to apply to flat cells if needed. Defaults to 1e-5}
 
 \item{maxslope}{Maximum absolute value of slopes. If this is set to -1 the slopes will not be limited. Default value is -1}
 
-\item{secondaryTH}{secondary threshold - maximum ratio of |secondary|/|primary| to be enforced. NOTE - this scaling occurs after any max threholds are applied. If this is set to -1 no scaling will be applied.}
-
-\item{river_method}{Optional method to treat river cells differently from the rest of the domain}
-
-\item{river_secondaryTH}{secondary threshold  to apply to the river cells if river method 1-3 is chosen- maximum ratio of |secondary|/|primary| to be enforced. NOTE - this scaling occurs after any max threholds are applied and the river smoothing is done if you are usnig optons 2 or 3.  The dafault value is zero. NOTE- there is not currently a '-1' equivalend for this threshold. secondary slopes along the river cells must either be scaled to 0 or some ratio of the primary slopes if one of the river methods is chosen.}
-
-\item{rivermask}{Mask with 1 for river cells and 0 for other cells}
-
-\item{subbasins}{An optional matrix of subbasin values}
+\item{secondaryTH}{secondary threshold - maximum ratio of |secondary|/|primary| to be enforced. 
+NOTE - this scaling occurs after any max threholds are applied. Currently this is only working for two options:
+(1) If this is set to -1 no scaling will be applied, (2) If  this is set to zero all  seconeary slopes will be zero}
 
 \item{printflag}{Print function progress}
-
-\item{upflag}{A flag indicating whether slope calc should be downwinded to be consitent with the upwinding in the ParFlow OverlandFlow Boundary condition it defaults to T. If set to F then all slopes will be calcualted as [i+1]-[i] with no adjustments. This approach is consistent with the OverlandKin boundary condition in  ParFlow.}
 }
 \description{
 This function will calculate slopes using standard or upwinding options and apply a range of smoothing options
