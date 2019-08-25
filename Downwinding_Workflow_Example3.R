@@ -1,16 +1,22 @@
-# Workflow Example 1: Rectangular domain no river mask
-# Calculating slopes with a downwinding approach  to be consisten with 
-# ParFlows OverlandFlow  boundary conditon. 
-# This example walks through the simplest case where
-# you have a rectangular domain and no river network specified a-priori
-# in this case the only input required is a DEM
+# Downwinding Workflow Example 3: 
+# - A rectangular domain and a pre-defined river network to be used for the DEM processing
+# - Calculating slopes with a downwinding approach to be consistent with ParFlow's OverlandFlow boundary conditon. 
+# - This requires two inputs: (1) a DEM and (2) a river mask
+
+#  This example usese the test domain from Condon and Maxwell (2019) (https://doi.org/10.1016/j.cageo.2019.01.020)
+#  the datasets for this domain are provided with the PriorityFlow R package
+#  to use your own datasets you should have a DEM and mask files formatted as a matrices
+#  with [i,j] corresponding to the x and y axes of the domain 
+#  (i.e. DEM[1,1] is the lower left corner of the domain and DEM[nx,ny] is the upper right)
+#  See help(DEM) and help(river.mask) for more information
 
 ##########################################
 #Source Libraries and functions
-#Note refer to the ReadMe on the Github repo for how to install the 
-#library if y ou haven't installed it yet: https://github.com/lecondon/PriorityFlow
-library("PriorityFlow")
+#Refer to the ReadMe on the Github repo for how to install the 
+#PriorityFlow library if you haven't installed it yet: https://github.com/lecondon/PriorityFlow
 rm(list=ls())
+library("PriorityFlow")
+help("PriorityFlow")
 library('fields')
 
 ##########################################
@@ -31,6 +37,7 @@ riv_th=sub_th #optional additional area threshold (number of grid cells) to use 
 riv_method=3 #method for processing river cellls (0=treat river cells the same as the rest of the domain, 1=set secondary slopes along the river to zero, 2=apply subbasin average slopes to river cells, 3=apply subbasin average river slopes of the river cells)
 mrg_th=10	#Threshold number of grid cells for merging small subbasins in the subbasin analysis
 
+
 #Grid dimensions for slopes
 dx=1000 #grid cell size for slope calculations
 dy=1000 #grid cell size for slope calcualtions
@@ -39,36 +46,76 @@ dy=1000 #grid cell size for slope calcualtions
 runname='Test'
 
 ##########################################
-# Read in Inputs
-# The DEM should be formated as a matrix with the same
-# dimensions as the domain
-dem=matrix(scan("dem_test.txt"), ncol=215, byrow=T)
-ny=nrow(dem)
-nx=ncol(dem)
-demT=t(dem[ny:1,]) #transforming the dem so it is indexed as [x,y] for functions
+# Get the dimensions of the domain and look at the inputs
+nx=nrow(DEM)
+ny=ncol(DEM)
 
-#check that you aren't upside down and backwards somehow...
-#if you've formatted your input correctly this should look like your DEM
-# without any additional transforming on the matrix
-image.plot(demT)
+par(mfrow=c(1,2))
+image.plot(DEM)
+image.plot(river.mask)
 
 ##########################################
-# Process the DEM
-#1. initialize the queue with all the rectangular border cells
-#2. Process the DEM so that all cells drain to the boundaries
+# Process the DEM:
+#1. Initialize the queue withriver cells that fall on the border
+#2. Traverse the stream network filling sinks and stair stepping around D8 neigbhors
+#3. Look for orphan branches and continue processing until they are all connected
+#4. Use the processed river cells as the intialize a new queue
+#5. process hillslopes from there
 
-#1. Initialize queue
-init=InitQueue(demT) #using the rectangular boundary
-#2. Process DEM
-travHS=D4TraverseB(demT, init$queue, init$marked, basins=init$basins, epsilon=ep)
+#1.initialize the queue with river cells that fall on the border
+init=InitQueue(DEM,  initmask=river.mask) #rectangular boundary
 
-#Look at the outputs
-ls(travHS) #to see a list of everything that comes out of the processing
-image.plot(travHS$dem) # the processed DEM
-image(travHS$marked) # Mask of cells the processing algorithm covered (should be everything for this approach)
-image(travHS$step) # The step at which each cell was processed in the algorithm
-image(travHS$basins) # The resulting drainage basins
+#2.take a first pass at traversing the streams
+trav1=StreamTraverse(DEM, mask=river.mask, init$queue, init$marked, basins=init$basins, printstep=F, epsilon=ep)
+print(paste("First Pass:", round(sum(trav1$marked * river.mask)/sum(river.mask)*100,1), " % cells processed"))
 
+image(trav1$basins, zlim=c(0.5, max(trav1$basins)))
+image.plot(trav1$marked) #The portion of the river mask traversed so far
+
+
+#3. look for 'orphaned' branches and continue traversing until they are all connected
+# orphaned branches are portions of the river network that are connected diagonally (i.e. without any d4 neighbors)
+norphan=1
+lap=1
+while(norphan>0){
+	#look for orphan branches
+	orphan=FindOrphan(trav1$dem, river.mask, trav1$marked)
+	norphan=orphan$norphan
+	print(paste("lap", lap, norphan, "orphans found"))
+
+	#go around again if orphans are found
+	if(norphan>0){
+		trav2 = StreamTraverse(trav1$dem, mask=river.mask, queue=orphan$queue, marked=trav1$marked, step=trav1$step, direction=trav1$direction, basins=trav1$basins, printstep=F, epsilon=ep)
+		trav1=trav2
+		lap=lap+1
+	} else {
+		print("Done!  No orphan branches found")
+	}
+} #end while
+print(paste("Final pass:", round(sum(trav1$marked * river.mask)/sum(river.mask)*100,1), " % cells processed"))
+
+image(trav1$mask)
+image(trav1$basins, zlim=c(0.5, max(trav1$basins)))
+image(trav1$marked)
+
+
+#4.initialize the queue with every cell on the processed river boundary
+#to do this use the marked rivers from the last step plus the edge cells
+#as the boundary and the mask
+inittemp=InitQueue(DEM) # Rectangular domain just using this to get a marked matrix of the edge cells
+RivBorder=inittemp$marked+trav1$marked #initializing with rectangular boundary
+RivBorder[RivBorder>1]=1
+image(RivBorder)
+init=InitQueue(trav1$dem,  border=RivBorder)
+
+#5.process all the cells off the river usins the river as the boundary
+travHS=D4TraverseB(trav1$dem, init$queue, init$marked, direction=trav1$direction, basins=trav1$basins, step=trav1$step, epsilon=ep)
+
+image(travHS$marked) #this should be the entire domain now
+image(travHS$step)
+image(travHS$basins,zlim=c(0.5, max(travHS$basins)), col=grey.colors(10))
+maskcol=colorRampPalette(c('white', 'red'))
+image(trav1$marked,zlim=c(0.5,1), col=maskcol(2), add=T)
 
 ##########################################
 # Calculate the slopes
@@ -82,21 +129,16 @@ image(travHS$basins) # The resulting drainage basins
 #Additionally primary slopes are limited by min slope and max slope thresholds
 slopesUW=SlopeCalcUP(dem=travHS$dem, direction=travHS$direction, dx=dx, dy=dy,  secondaryTH=scale, maxslope=maxslope, minslope=minslope)
 
-
-### Option 2: If you would like to handle river cells differently from the rest of the domain
-
-#do a preliminary slope calc just to get the flow directions on the boundary fixed
-slopesUW=SlopeCalcUP(dem=travHS$dem, direction=travHS$direction, dx=dx, dy=dy,  secondaryTH=scale, maxslope=maxslope, minslope=minslope)
-
+### Option 2: If you would like to handle river cells differently from the rest of the domain-- NOTE the 'river cells' here will be determined based on drainage area thresholds after not the orinigal rive mask provided.
 # Calculate the drainage area
-area=drainageArea(slopesUW$direction, printflag=F)
+area=drainageArea(travHS$direction, printflag=F)
 
 # Define subbasins for calcualting river reach slopes
 # the riv_th here is the drainage area threshold for splitting the river network branches
 # when you do this you can still end up with subbasins with drainage areas less than the riv_th
 # when multiple branches come together in a small area.
 # To fix this you can set a merge threshold (merge_th) so that subbains with areas < merge_th autmoatically get merged with their downstream neighbor
-subbasin=CalcSubbasins(slopesUW$direction, area, riv_th=sub_th, merge_th=mrg_th)
+subbasin=CalcSubbasins(travHS$direction, area, riv_th=sub_th, merge_th=mrg_th)
 #plot the resulting subbasins and rivers
 temp=subbasin$RiverMask
 temp[temp==0]=NA
@@ -109,7 +151,7 @@ image.plot((temp*2), add=T, col=maskcol(2), legend=F)
 # The "river_method' flag here determines how the river cells will be handeled (e.g. using subbasin averages along reaches). Refer to the top of this script or the function for details.
 slopesUW=SlopeCalcUP(dem=travHS$dem, direction=travHS$direction, dx=dx, dy=dy, secondaryTH=scale, maxslope=maxslope, minslope=minslope, river_method=riv_method, rivermask=subbasin$RiverMask, subbasin=subbasin$subbasins)
 
-### Option 2b: Alternate more advanced approach: Define a river mask separate from the subbasin river mask and use this for the slope calculations. If you do this the average slopes will still be calculated
+#Alternate more advanced approach: Define a river mask separate from the subbasin river mask and use this for the slope calculations. If you do this the average slopes will still be calculated
 #by subbasin using the sub_th, but you can apply those average sloeps to more river cells by setting a lower threshold here. This is the 'riv_th' set at the top
 #if you set riv_th=sub_th at the top this will have the same effect as just running the slope calc with the subbasin$RiverMask
 rivers=area
@@ -132,8 +174,8 @@ image(slopesUW$slopey)
 image.plot(slopesUW$direction)
 
 ##########################################
-# Calculate the drainage area - if you went with option 1 for slopes and you didn't do this already
-area=drainageArea(slopesUW$direction, printflag=T) #rectangular boundary
+# Calculate the drainage area
+area=drainageArea(slopesUW$direction, printflag=F)
 image.plot(area)
 
 ##########################################
@@ -155,6 +197,7 @@ fout=paste(runname,".slopey.sa", sep="")
 write.table( t(c(nx,ny,1)), fout, append=F, row.names=F, col.names=F)
 write.table(slopeUWy, fout, append=T, row.names=F, col.names=F)
 
+
 ##########################################
 #Example writing out other variables as matrices
 write.table( t(slopesUW$direction[,ny:1]) ,paste(runname, ".direction.out.txt", sep=""), row.names=F, col.names=F)
@@ -162,9 +205,6 @@ write.table( t(travHS$dem[,ny:1]) ,paste(runname, ".dem.out.txt", sep=""), row.n
 write.table( t(area[,ny:1]) , paste(runname, ".area.out.txt", sep=""), row.names=F, col.names=F)
 write.table( t(subbasin$subbasins[,ny:1]) , paste(runname, ".subbasins.out.txt", sep=""), row.names=F, col.names=F)
 write.table( t(subbasin$segments[,ny:1]) , paste(runname, ".subbasin_streams.out.txt", sep=""), row.names=F, col.names=F)
-
-#Example writing out a variable as a raster
-write.raster( t(subbasin$segments[,ny:1]) , paste(runname, ".subbasin_streams.out.asc", sep=""), xllcorner=0.0, yllcorner=0.0, dx=dx, naval=-999)
 
 ## write out the subbasin summary information
 write.table(subbasin$summary, paste(runname, ".Subbasin_Summary.txt", sep=""), row.names=F)

@@ -1,21 +1,23 @@
-# Workflow Example 2: Irregular domain boundary no river mask
-# This example walks through a case where
-# you have an irrigular domain mask and no river network specified a-priori
-# This requires two inputs: (1) a DEM and (2)a domain mask
+# Downwinding Workflow Example 2: 
+# - Irregular domain boundary and no river mask
+# - Calculating slopes with a downwinding approach to be consistent with ParFlow's OverlandFlow boundary conditon. 
+# - This requires two inputs: (1) a DEM and (2) a watershed mask
+
+# This example usese the test domain from Condon and Maxwell (2019) (https://doi.org/10.1016/j.cageo.2019.01.020)
+#  the datasets for this domain are provided with the PriorityFlow R package
+#  to use your own datasets you should have a DEM and mask files formatted as a matrices
+#  with [i,j] corresponding to the x and y axes of the domain 
+#  (i.e. DEM[1,1] is the lower left corner of the domain and DEM[nx,ny] is the upper right)
+#  See help(DEM) and help(watershed.mask) for more information
 
 ##########################################
 #Source Libraries and functions
+#Note refer to the ReadMe on the Github repo for how to install the 
+#PriorityFlow library if you haven't installed it yet: https://github.com/lecondon/PriorityFlow
 rm(list=ls())
+library("PriorityFlow")
+help("PriorityFlow")
 library('fields')
-source("./functions/D4_Traverse.R")
-source("./functions/Init_Queue.R")
-source("./functions/Stream_Traverse.R")
-source("./functions/Find_Orphan.R")
-source("./functions/drainage_area.R")
-source("./functions/Slope_Calc_Upwind.R")
-source("./functions/Get_Border.R")
-source("./functions/Define_Subbasins.R")
-
 ##########################################
 #Settings
 #Settings for the slope processing to change
@@ -43,24 +45,13 @@ dy=1000 #grid cell size for slope calcualtions
 runname='Test'
 
 ##########################################
-# Inputs
-# The DEM and mask should be formated as a matrices with the same
-# dimensions as the domain (i.e. ncol=nx, nrow=ny)
-# The mask should consist of 0's and 1's with 1's for any grid cell within the domain
-dem=matrix(scan("dem_test.txt"), ncol=215, byrow=T)
-domainmask=matrix(scan("mask_test.txt"), ncol=215, byrow=T)
+# Get the dimensions of the domain and look at the inputs
+nx=nrow(DEM)
+ny=ncol(DEM)
 
-ny=nrow(dem)
-nx=ncol(dem)
-#transforming the inputs so it is indexed as [x,y] for functions
-demT=t(dem[ny:1,])
-domainmaskT=t(domainmask[ny:1,])
-
-#check that you aren't upside down and backwards somehow...
-#if you've formatted your input correctly this should look
-#like your domain without any additional transforming
-image.plot(demT)
-image.plot(domainmaskT)
+par(mfrow=c(1,2))
+image.plot(DEM)
+image.plot(watershed.mask)
 
 
 ##########################################
@@ -69,9 +60,9 @@ image.plot(domainmaskT)
 #2. Process the DEM so that all cells drain to the borders
 
 #1. Initialize queue
-init=InitQueue(demT, domainmask=domainmaskT) #using the rectangular boundary
+init=InitQueue(DEM, domainmask=watershed.mask) #using the rectangular boundary
 #2. Process DEM
-travHS=D4TraverseB(demT, init$queue, init$marked, basins=init$basins, epsilon=ep, mask=domainmaskT)
+travHS=D4TraverseB(DEM, init$queue, init$marked, basins=init$basins, epsilon=ep, mask=watershed.mask)
 
 #Look at the outputs
 ls(travHS) #to see a list of everything that comes out of the processing
@@ -91,22 +82,19 @@ image(travHS$basins) # The resulting drainage basins
 #Slopes in the secondary direction are set to a maximum of 0.1*primary flow direction
 #To calculate only slopes in the primary flow direction set the secondaryTH to 0
 #Additionally primary slopes are limited by min slope and max slope thresholds
-slopesUW=SlopeCalcUP(dem=travHS$dem, mask=domainmaskT, direction=travHS$direction, dx=dx, dy=dy,  secondaryTH=scale, maxslope=maxslope, minslope=minslope)
+slopesUW=SlopeCalcUP(dem=travHS$dem, mask=watershed.mask, direction=travHS$direction, dx=dx, dy=dy,  secondaryTH=scale, maxslope=maxslope, minslope=minslope)
 
 
 ### Option 2: If you would like to handle river cells differently from the rest of the domain
-#do a preliminary slope calc just to get the flow directions on the boundary fixed
-slopesUW=SlopeCalcUP(dem=travHS$dem, mask=domainmaskT, direction=travHS$direction, dx=dx, dy=dy,  secondaryTH=scale, maxslope=maxslope, minslope=minslope)
-
 # Calculate the drainage area
-area=drainageArea(slopesUW$direction, printflag=F)
+area=drainageArea(travHS$direction, printflag=F)
 
 # Define subbasins for calcualting river reach slopes
 # the riv_th here is the drainage area threshold for splitting the river network branches
 # when you do this you can still end up with subbasins with drainage areas less than the riv_th
 # when multiple branches come together in a small area.
 # To fix this you can set a merge threshold (merge_th) so that subbains with areas < merge_th autmoatically get merged with their downstream neighbor
-subbasin=CalcSubbasins(slopesUW$direction, mask=domainmaskT, area, riv_th=sub_th, merge_th=mrg_th)
+subbasin=CalcSubbasins(travHS$direction, mask=watershed.mask, area, riv_th=sub_th, merge_th=mrg_th)
 #plot the resulting subbasins and rivers
 temp=subbasin$RiverMask
 temp[temp==0]=NA
@@ -117,7 +105,7 @@ image.plot((temp*2), add=T, col=maskcol(2), legend=F)
 
 #Calculate the slopes
 # The "river_method' flag here determines how the river cells will be handeled (e.g. using subbasin averages along reaches). Refer to the top of this script or the function for details.
-slopesUW=SlopeCalcUP(dem=travHS$dem, mask=domainmaskT, direction=travHS$direction, dx=dx, dy=dy, secondaryTH=scale, maxslope=maxslope, minslope=minslope, river_method=riv_method, rivermask=subbasin$RiverMask, subbasin=subbasin$subbasins)
+slopesUW=SlopeCalcUP(dem=travHS$dem, mask=watershed.mask, direction=travHS$direction, dx=dx, dy=dy, secondaryTH=scale, maxslope=maxslope, minslope=minslope, river_method=riv_method, rivermask=subbasin$RiverMask, subbasin=subbasin$subbasins)
 
 ### Option 2b: Alternate more advanced approach: Define a river mask separate from the subbasin river mask and use this for the slope calculations. If you do this the average slopes will still be calculated
 #by subbasin using the sub_th, but you can apply those average sloeps to more river cells by setting a lower threshold here. This is the 'riv_th' set at the top
@@ -134,7 +122,7 @@ maskcol=colorRampPalette(c('black', 'black'))
 image.plot(subbasin$subbasins)
 image.plot((temp*2), add=T, col=maskcol(2), legend=F)
 
-slopesUW=SlopeCalcUP(dem=travHS$dem,  mask=domainmaskT, direction=travHS$direction, dx=dx, dy=dy, secondaryTH=0.1, maxslope=maxslope, minslope=minslope, river_method=riv_method, rivermask=rivers, subbasin=subbasin$subbasins)
+slopesUW=SlopeCalcUP(dem=travHS$dem,  mask=watershed.mask, direction=travHS$direction, dx=dx, dy=dy, secondaryTH=0.1, maxslope=maxslope, minslope=minslope, river_method=riv_method, rivermask=rivers, subbasin=subbasin$subbasins)
 
 
 #Look at the slopes and directions
@@ -145,7 +133,7 @@ image.plot(slopesUW$direction)
 
 ##########################################
 # Calculate the drainage area - if you went with option 1 for slopes and you didn't do this already
-area=drainageArea(slopesUW$direction, mask=domainmaskT, printflag=F)
+area=drainageArea(travHS$direction, mask=watershed.mask, printflag=F)
 image.plot(area)
 
 ##########################################
@@ -169,7 +157,7 @@ write.table(slopeUWy, fout, append=T, row.names=F, col.names=F)
 
 ##########################################
 #Example writing out other variables as matrices
-write.table( t(slopesUW$direction[,ny:1]) ,paste(runname, ".direction.out.txt", sep=""), row.names=F, col.names=F)
+write.table( t(travHS$direction[,ny:1]) ,paste(runname, ".direction.out.txt", sep=""), row.names=F, col.names=F)
 write.table( t(travHS$dem[,ny:1]) ,paste(runname, ".dem.out.txt", sep=""), row.names=F, col.names=F)
 write.table( t(area[,ny:1]) , paste(runname, ".area.out.txt", sep=""), row.names=F, col.names=F)
 write.table( t(subbasin$subbasins[,ny:1]) , paste(runname, ".subbasins.out.txt", sep=""), row.names=F, col.names=F)
