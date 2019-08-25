@@ -62,6 +62,7 @@ if(nqueue>nchunk){
 } else{
 	print(paste('inital queue:', nqueue, "Not splitting"))
 	queue1=queue
+	queue2=NULL
 	nqueue2=0
 	th=queue1[nqueue,3]*1.1
 }
