@@ -1,6 +1,6 @@
 PriorityFlow
 =======
-*PriorityFlow* is a toolkit for topographic processing for hydrologic models. This repo contains a set of R Functions and example workflow scripts. The functions are also available as an R package (see instructions below)
+*PriorityFlow* is a toolkit for topographic processing for hydrologic models. This repo contains an R package and a set of workflow examples (see instructions below).  
 
 #### Development Team
 + Laura Condon (lecondon@email.arizona.edu)
@@ -12,7 +12,7 @@ For more details on the model and if you use PriorityFlow in published work plea
 
 Installing the R-package
 --------------------
-If you would like to use the functions as an R-package rather than cloning and sourcing you can do the following:
+The priority flow functions are provided as an R package. To install it you will need to do the following:
 1. To use R packages from GitHub you need to have the devtools package installed:
 ```
 install.packages('devtools’)
@@ -30,6 +30,10 @@ help('PriorityFlow’)
 ```
 *Note: If you are using the R-package then you can get rid of the 'source' calls at the top of the example workflows because the functions will already be loaded with the library.
 
+Getting  started
+--------------------
+The best way to get started with this toolset would be to walk through the 'Workflow_Example' R notebook or html file in this directory. Additionally, you can refer to the help files for all of the functions individually in index when if you run 'help('PriorityFlow')'
+
 DEM Processing
 --------------------
 The DEM processing code is a modified version of the 'Priority Flood' algorithm which is a depression filling algorithm (Wang and Liu 2006; Barnes et al., 2014; Zhou, 2016).  This is an optimal approach that processes the DEM to ensure every cell drains to the border.
@@ -40,27 +44,27 @@ Additionally, a second processing option is provided if there is an river networ
 
 Slope Calculations
 --------------------
-The slope function `Slope_Calc_Upwind.R` calculates slopes in the x and y direction up-winded to be consistent with ParFlow. The most basic application of the function will calculate slopes in the x and y directions for the entire domain based on the input DEM
+There are two slope calculations functions in this repo:
 
-For more advanced processing there are the following options (refer to the function for details on how to implement flags):
-+ Maximum slope threshold: A maximum absolute value slope can be set.
-+ Scaling secondary flow directions: By default slopes are calculated in the x and y direction. Using the flow direction file which is produced in the DEM processing step, the slope perpendicular to the primary flow direction can be scaled so that they do not exceed some fraction of the primary flow direction. If the fraction is set to 0 this will result in slope files with only slopes in x or y for a given cell (similar to previous GRASS processing approaches).
-+ Enforcing primary flow directions along river cells: The flow scaling applied above occurs over the entire domain. In addition, if a mask of river cells is applied one scaling value can be applied to the rest of the domain while flow in the primary directions is enforced along the specified river cells (i.e. applying a scaling ratio of 0 for river cells).
-+ Smoothing slopes along river reaches: River reaches are calculated using the sub-basin function and can vary in size baed on the the area threshold set for sub-basins. Smoothing can be applied along river reaches either using the average slope for the cells in the river reach or the average slope of the entire subbasin.
-+ Border cells: By default all border cells are processed to point out. This can be changed to have all border cells to point by changing *borderdir* option in the slope function to 2. In this case, border cells will point in, except wherever there is one or more cells draining to a border cell, this will pointed out to allow surface water bodies to exit. For more complicated domains, an optional border direction mask can be input to set some borders to point out and some in (Note that as with the previous setting  wherever there are one or more cells draining to a border cell the cell will pointed out to allow surface water bodies to exit regardless of what is specified in the mask).
+`Slope_Calc_Upwind.R'  calculates slopes in the x and y direction down-winded to be consistent with the ParFlow OverlandFLow boundary condition.
+
+'Slope_Calc_Standard.R' calculates slopes in the x and y direction using indexing to be consistent with the ParFlow OverlandKinematic and OverlandDiffusive boundary conditions. This is the approach that is used in the main workflow example.
+
 
 Workflow Scripts
 --------------------
-Four workflow scripts are provided to demonstrate processing for four examples of increasing complexity
-1. `Workflow_Example1.R`: Rectangular domain with no river network
-2. `Workflow_Example2.R`: Irregular domain with no river network
-3. `Workflow_Example3.R`: Rectangular domain with river network
-4. `Workflow_Example4.R`: Irregular domain with river network
+1. `Workflow_Example.Rmd`: This is the most updated  workflow example and  the  one  I recommend starting from.
+
+The next four examples show the older slope calculation function with downwinding
+2. `Downwinding_Workflow_Example1.R`: Rectangular domain with no river network
+3. `Downwinding_Workflow_Example2.R`: Irregular domain with no river network
+4. `Downwinding_Workflow_Example3.R`: Rectangular domain with river network
+5. `Downwinding_Workflow_Example4.R`: Irregular domain with river network
 
 
 Tips
 --------------------
-An example workflow using QGIS and GRASS to ensure a D4 connected mask (i.e. one where you don't have any cells that are only connected to the rest of the domain diagonally):
+If you want to process your DEM within a pre-defined watershed mask and you need help creating that mask. An example workflow using QGIS and GRASS to ensure a D4 connected mask (i.e. one where you don't have any cells that are only connected to the rest of the domain diagonally):
 1. create the mask in QGIS
 2. Using GRASS, clump it: r.clump
 3. change no data value to 0: r.null
