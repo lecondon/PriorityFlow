@@ -36,10 +36,10 @@ image.plot(watershed.mask, main="Watershed Mask")
 image.plot(river.mask, main="River Network")
 
 nx=dim(DEM)[1]
-ny=dim(DEM)[1]
+ny=dim(DEM)[2]
 ```
 
-The data sets used here are already formatted as [nx,ny] matrices such that the [i,j] indices correspond to the x and y axes of the domain respectively and [1,1] is the lower left corner and [nx,ny] is the upper right corner. You will need to have your DEM and any other input files formatted like this before you get started. 
+NOTE: The data sets used here are already formatted as [nx,ny] matrices such that the [i,j] indices correspond to the x and y axes of the domain respectively and [1,1] is the lower left corner and [nx,ny] is the upper right corner. You will need to have your DEM and any other input files formatted like this before you get started. To check that you have them formatted correctly you should be able to do image.plot(yourDEM) and your domain should appear correctly (i.e. untransposed).
 
 ## Step 1: Processing the DEM
 In this step the priority flow algorithm will be used to traverse the raw DEM and ensure that every grid cell in the domain has a pathway to exit along D4 drainage pathways (i.e. there are no unintended internal sinks).  
