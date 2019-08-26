@@ -46,9 +46,9 @@ Slope Calculations
 --------------------
 There are two slope calculations functions in this repo:
 
-`Slope_Calc_Upwind.R'  calculates slopes in the x and y direction down-winded to be consistent with the ParFlow OverlandFLow boundary condition.
+`Slope_Calc_Upwind.R`  calculates slopes in the x and y direction down-winded to be consistent with the ParFlow OverlandFLow boundary condition.
 
-'Slope_Calc_Standard.R' calculates slopes in the x and y direction using indexing to be consistent with the ParFlow OverlandKinematic and OverlandDiffusive boundary conditions. This is the approach that is used in the main workflow example.
+`Slope_Calc_Standard.R` calculates slopes in the x and y direction using indexing to be consistent with the ParFlow OverlandKinematic and OverlandDiffusive boundary conditions. This is the approach that is used in the main workflow example.
 
 
 Workflow Scripts
@@ -56,10 +56,10 @@ Workflow Scripts
 1. `Workflow_Example.Rmd`: This is the most updated  workflow example and  the  one  I recommend starting from.
 
 The next four examples show the older slope calculation function with downwinding
-2. `Downwinding_Workflow_Example1.R`: Rectangular domain with no river network
-3. `Downwinding_Workflow_Example2.R`: Irregular domain with no river network
-4. `Downwinding_Workflow_Example3.R`: Rectangular domain with river network
-5. `Downwinding_Workflow_Example4.R`: Irregular domain with river network
+1. `Downwinding_Workflow_Example1.R`: Rectangular domain with no river network
+2. `Downwinding_Workflow_Example2.R`: Irregular domain with no river network
+3. `Downwinding_Workflow_Example3.R`: Rectangular domain with river network
+4. `Downwinding_Workflow_Example4.R`: Irregular domain with river network
 
 
 Tips
