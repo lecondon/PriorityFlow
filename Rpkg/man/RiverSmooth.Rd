@@ -29,6 +29,19 @@ of the upstream end of the stream segment, (4) x and (5) y index of the downstre
 
 \item{printflag}{optional flag to print function progress}
 }
+\value{
+This function returns three outputs:
+
+1.dem.adj - A matrix with the adjusted DEM values following the river smoothing opeartion
+
+2.processed - A matrix indicating the cells that were processed by this routine (1=processed, 0=not processed). 
+This mask should match the river reach mask you provide the function if all cells were appropriately processed.
+
+3.summary - A summary of the reach properties. This is a matrix with a row for every river reach and the following columns:
+1. River segment ID number, 2. X index of the top of the segment, 3. X index of the bottom of the segment, 
+4. Y index of the top of the segment, 5. Yindex of the bottom of the segment, 6. Length of the segment,
+7. Elevation at the top of the segment, 8. Elevation at the bottom of the segment, 9. Delta applied along the segment (i.e. (Top-Bottom)/Length)
+}
 \description{
 This function will smooth a DEM along a stream network. It requires pre-defined stream segments 
 and subbasins which can be obtained using the \code{\link{CalcSubbasins}} function.

@@ -13,8 +13,14 @@
 #' @param river.segments A nx by ny matrix indicating the subbasin number for with for all grid cells on the river network 
 #'      ( (all cells not on the river network shoudl be 0)
 #' @param epsilon the minimum elevation difference between cells walking upstream from the river network. 
-#' @return dem.adj An ajusted dem
-#' @return summary summary summary 
+#' @return This function returns three outputs:
+#' @return 1.dem.adj - A matrix with the adjusted DEM values following the river smoothing opeartion
+#' @return 2.processed - A matrix indicating the cells that were processed by this routine (1=processed, 0=not processed). 
+#' This mask should match the river reach mask you provide the function if all cells were appropriately processed. 
+#' @return 3.summary - A summary of the reach properties. This is a matrix with a row for every river reach and the following columns:
+#' 1. River segment ID number, 2. X index of the top of the segment, 3. X index of the bottom of the segment, 
+#' 4. Y index of the top of the segment, 5. Yindex of the bottom of the segment, 6. Length of the segment,
+#' 7. Elevation at the top of the segment, 8. Elevation at the bottom of the segment, 9. Delta applied along the segment (i.e. (Top-Bottom)/Length)
 #' @export
 #' 
 RiverSmooth=function(dem, direction, mask, river.summary, river.segments, epsilon=0.01, d4=c(1,2,3,4), printflag=F){
