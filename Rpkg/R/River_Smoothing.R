@@ -12,7 +12,9 @@
 #'  (7) drainage area of the subbasin 
 #' @param river.segments A nx by ny matrix indicating the subbasin number for with for all grid cells on the river network 
 #'      ( (all cells not on the river network shoudl be 0)
-#' @param epsilon the minimum elevation difference between cells walking upstream from the river network.  
+#' @param epsilon the minimum elevation difference between cells walking upstream from the river network. 
+#' @return dem.adj An ajusted dem
+#' @return summary summary summary 
 #' @export
 #' 
 RiverSmooth=function(dem, direction, mask, river.summary, river.segments, epsilon=0.01, d4=c(1,2,3,4), printflag=F){
@@ -66,6 +68,11 @@ RiverSmooth=function(dem, direction, mask, river.summary, river.segments, epsilo
   marked.segments=rep(0,nriver) #marker for keeping track of which reaches are processed
   marked.matrix=matrix(0, ncol=ny, nrow=nx)
   
+  #Setup a smoothing summary
+  riversmooth.summary=matrix(0, nrow=nriver, ncol=9)
+  colnames(riversmooth.summary)=c("SegmentID", "Start.X", "Start.Y", "End.X", "End.Y","Lenght", "Top.Elevation", "Bottom.Elevation", "delta")
+  riversmooth.summary[,1:5]=river.summary[,1:5]
+  
   #make a mask of the hillslope cells
   hillmask=mask
   hillmask[which(river.segments>0)]=0
@@ -94,6 +101,7 @@ RiverSmooth=function(dem, direction, mask, river.summary, river.segments, epsilo
     r=river.summary[indr,1] #river segment number
     rdown=river.summary[indr,6]
     length=river.length[r]
+    riversmooth.summary[indr,6]=river.length[r]
     
     #find the top and bottom elevations of the current river segment
     top=dem2[river.summary[indr,2], river.summary[indr,3]]
@@ -107,6 +115,7 @@ RiverSmooth=function(dem, direction, mask, river.summary, river.segments, epsilo
       bdir=dir2[river.summary[indr,4], river.summary[indr,5]]
       bottom=dem2[(river.summary[indr,4]+kd[bdir,1]), (river.summary[indr,5]+kd[bdir,2])]
     }
+
     
     if(top<bottom){
       #calculate the delta from the original dem
@@ -124,6 +133,7 @@ RiverSmooth=function(dem, direction, mask, river.summary, river.segments, epsilo
         print(paste("Adjusting the top elevation from", round(top0,2), "top", round(top,2)))
       }
     }
+
     
     if(printflag==T){
       print(paste("River segment:",r))
@@ -142,6 +152,9 @@ RiverSmooth=function(dem, direction, mask, river.summary, river.segments, epsilo
       delta=0
     }
     temp=top
+    riversmooth.summary[indr,7]=top
+    riversmooth.summary[indr,8]=bottom
+    riversmooth.summary[indr,9]=delta
     
     if(length>1){
       for(i in 2:length){
@@ -176,7 +189,7 @@ RiverSmooth=function(dem, direction, mask, river.summary, river.segments, epsilo
     if(length(queue)==0){active=F}
   } #end while active
       
-output_list=list("dem.adj"=dem2, "processed"=marked.matrix)
+output_list=list("dem.adj"=dem2, "processed"=marked.matrix, "summary"=riversmooth.summary)
   
 return(output_list)
 } # End function
