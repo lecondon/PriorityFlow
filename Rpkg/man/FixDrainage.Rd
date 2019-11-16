@@ -4,8 +4,8 @@
 \alias{FixDrainage}
 \title{Walk upstream from a point ensuring DEM is increasing by a minum epsilon}
 \usage{
-FixDrainage(dem, direction, mask, epsilon, startpoint, d4 = c(1, 2, 3,
-  4))
+FixDrainage(dem, direction, mask, bank.epsilon, startpoint, d4 = c(1, 2,
+  3, 4))
 }
 \arguments{
 \item{dem}{Elevation matrix}
@@ -14,7 +14,7 @@ FixDrainage(dem, direction, mask, epsilon, startpoint, d4 = c(1, 2, 3,
 
 \item{mask}{Mask with ones for cells to be processed and zeros for everything else - defaults to a mask of all 1's}
 
-\item{epsilon}{the minimum elevation difference between cells walking upstream from the river network.}
+\item{bank.epsilon}{the minimum elevation difference between cells walking up the banks from the river network.}
 
 \item{startpoint}{the x,y index of a grid cell to start walking upstream from}
 

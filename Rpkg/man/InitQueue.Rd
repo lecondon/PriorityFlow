@@ -4,7 +4,7 @@
 \alias{InitQueue}
 \title{Initilze queue for topographic processing}
 \usage{
-InitQueue(dem, initmask, domainmask, border)
+InitQueue(dem, initmask, domainmask, border, d4 = c(1, 2, 3, 4))
 }
 \arguments{
 \item{dem}{Elevation matrix}
@@ -15,6 +15,8 @@ Note: if no init mask is included every border cell will be added to the queue}
 \item{domainmask}{Mask of the domain extent to be considered. If no domain mask is provided boundaries will be calcualted from the rectangular extent}
 
 \item{border}{Alternatively you can input your own border rathern than having it be calculated from the domain mask. For example if you want to have the river network and the borders combined you can input this as a border.}
+
+\item{d4}{directional numbering system: the numbers you want to assigne to down, left, top,right (defaults to 1,2,3,4)}
 }
 \description{
 Sets up a queue and initilizes marked and step matrices for DEM processing

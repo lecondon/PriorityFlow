@@ -220,23 +220,25 @@ dem_pad=rbind(dem[1,],dem_pad, dem[nx,])
 dem_pad=cbind(dem_pad[,1],dem_pad, dem_pad[,ny])
 
 #loop over  border cells and asign a flow directon based on steepest neigbhor
-for(b in 1:nrow(bordermiss)){
-  bx=bordermiss[b,1]+1
-  by=bordermiss[b,2]+1
-  #caclcualte the elevation diference to every d4 neigboring cell
-  dem_negh=c((dem[bx-1,by-1] - dem_pad[bx+kd[1,1], by+kd[1,2]]), 
+if(length(bordermiss>0)){
+  for(b in 1:nrow(bordermiss)){
+    bx=bordermiss[b,1]+1
+    by=bordermiss[b,2]+1
+    #caclcualte the elevation diference to every d4 neigboring cell
+    dem_negh=c((dem[bx-1,by-1] - dem_pad[bx+kd[1,1], by+kd[1,2]]), 
              (dem[bx-1,by-1] - dem_pad[bx+kd[2,1], by+kd[2,2]]),
              (dem[bx-1,by-1] - dem_pad[bx+kd[3,1], by+kd[3,2]]), 
              (dem[bx-1,by-1] - dem_pad[bx+kd[4,1], by+kd[4,2]]))
-  #pick the neigbor with the biggest elevaiton difference
-  #note if there is a tie this will just pick the first
-  pick=which.max(abs(dem_negh))
-  #assigne the flow direction
-  if(dem_negh[pick]<0){
-    direction[bx-1,by-1]=kd[pick,3]
-  }else{direction[bx-1,by-1]=d4[pick]}
+    #pick the neigbor with the biggest elevaiton difference
+    #note if there is a tie this will just pick the first
+    pick=which.max(abs(dem_negh))
+    #assigne the flow direction
+    if(dem_negh[pick]<0){
+      direction[bx-1,by-1]=kd[pick,3]
+   }else{direction[bx-1,by-1]=d4[pick]}
 
-} #end for b in bordermiss
+  } #end for b in bordermiss
+}
 
 
 

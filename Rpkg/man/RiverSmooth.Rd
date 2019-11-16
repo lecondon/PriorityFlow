@@ -5,7 +5,8 @@
 \title{Apply smoothing to a DEM along a pre-defined stream network}
 \usage{
 RiverSmooth(dem, direction, mask, river.summary, river.segments,
-  epsilon = 0.01, d4 = c(1, 2, 3, 4), printflag = F)
+  bank.epsilon = 0.01, river.epsilon = 0, d4 = c(1, 2, 3, 4),
+  printflag = F)
 }
 \arguments{
 \item{dem}{Elevation matrix}
@@ -23,7 +24,9 @@ of the upstream end of the stream segment, (4) x and (5) y index of the downstre
 \item{river.segments}{A nx by ny matrix indicating the subbasin number for with for all grid cells on the river network 
 ( (all cells not on the river network shoudl be 0)}
 
-\item{epsilon}{the minimum elevation difference between cells walking upstream from the river network.}
+\item{bank.epsilon}{the minimum elevation difference between cells walking up the banks from the river network.}
+
+\item{river.epsilon}{the minimum elevation difference between cells along the river}
 
 \item{d4}{directional numbering system: the numbers you want to assigne to down, left, top,right (defaults to 1,2,3,4)}
 

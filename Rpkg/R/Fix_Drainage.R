@@ -16,7 +16,7 @@
 #' @param startpoint the x,y index of a grid cell to start walking upstream from
 #' @export
 #' 
-FixDrainage=function(dem, direction, mask, epsilon, startpoint, d4=c(1,2,3,4)){
+FixDrainage=function(dem, direction, mask, bank.epsilon, startpoint, d4=c(1,2,3,4)){
   #D4 neighbors
   #Rows: down, left top right
   #Colums: (1)deltax, (2)deltay, direction number if you are waking upstream
@@ -54,8 +54,8 @@ FixDrainage=function(dem, direction, mask, epsilon, startpoint, d4=c(1,2,3,4)){
       if(tempx*tempy>0 & tempx<nx & tempy<ny){
         if((d-dir2[tempx,tempy])==0 & mask[tempx,tempy]==1){
             #print(paste("CHECKING:", tempx,tempy, dir2[tempx,tempy],round(dem[tempx,tempy],1), round(dem[indx,indy],1)))
-           if((dem2[tempx,tempy]-dem2[indx,indy])<epsilon){
-              dem2[tempx,tempy]=dem2[indx,indy]+epsilon
+           if((dem2[tempx,tempy]-dem2[indx,indy])<bank.epsilon){
+              dem2[tempx,tempy]=dem2[indx,indy]+bank.epsilon
               #print(paste("ADJUSTING:", tempx,tempy, "FROM", round(dem[tempx,tempy],1), "TO:", round(dem2[tempx,tempy],1)))
               marked[tempx,tempy]=1
               queuetemp=rbind(c(tempx,tempy),queuetemp)
@@ -77,7 +77,7 @@ FixDrainage=function(dem, direction, mask, epsilon, startpoint, d4=c(1,2,3,4)){
       }else{active=F}
     }
   } #end while active
-  #print(paste("Done! Start pont: ", startpoint[1], startpoint[2], ",", sum(marked), " cells adjusted", epsilon, sep=""))
+  #print(paste("Done! Start pont: ", startpoint[1], startpoint[2], ",", sum(marked), " cells adjusted", bank.epsilon, sep=""))
   
   output_list=list("dem.adj"=dem2, "processed"=marked)
   

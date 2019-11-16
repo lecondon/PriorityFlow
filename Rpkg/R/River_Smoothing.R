@@ -12,7 +12,8 @@
 #'  (7) drainage area of the subbasin 
 #' @param river.segments A nx by ny matrix indicating the subbasin number for with for all grid cells on the river network 
 #'      ( (all cells not on the river network shoudl be 0)
-#' @param epsilon the minimum elevation difference between cells walking upstream from the river network. 
+#' @param bank.epsilon the minimum elevation difference between cells walking up the banks from the river network. 
+#' @param river.epsilon the minimum elevation difference between cells along the river
 #' @return This function returns three outputs:
 #' @return 1.dem.adj - A matrix with the adjusted DEM values following the river smoothing opeartion
 #' @return 2.processed - A matrix indicating the cells that were processed by this routine (1=processed, 0=not processed). 
@@ -23,7 +24,7 @@
 #' 7. Elevation at the top of the segment, 8. Elevation at the bottom of the segment, 9. Delta applied along the segment (i.e. (Top-Bottom)/Length)
 #' @export
 #' 
-RiverSmooth=function(dem, direction, mask, river.summary, river.segments, epsilon=0.01, d4=c(1,2,3,4), printflag=F){
+RiverSmooth=function(dem, direction, mask, river.summary, river.segments, bank.epsilon=0.01, river.epsilon=0.0,  d4=c(1,2,3,4), printflag=F){
   ####################################################################
   # PriorityFlow - Topographic Processing Toolkit for Hydrologic Models
   # Copyright (C) 2018  Laura Condon (lecondon@email.arizona.edu)
@@ -122,15 +123,19 @@ RiverSmooth=function(dem, direction, mask, river.summary, river.segments, epsilo
       bottom=dem2[(river.summary[indr,4]+kd[bdir,1]), (river.summary[indr,5]+kd[bdir,2])]
     }
 
-    
-    if(top<bottom){
+    topmin=bottom+river.epsilon*length
+    if(top<topmin){
       #calculate the delta from the original dem
       top0=dem[river.summary[indr,2], river.summary[indr,3]]
-      bdir=dir2[river.summary[indr,4], river.summary[indr,5]]
-      bottom0=dem[(river.summary[indr,4]+kd[bdir,1]), (river.summary[indr,5]+kd[bdir,2])]
+      if(rdown>0){
+       bdir=dir2[river.summary[indr,4], river.summary[indr,5]]
+        bottom0=dem[(river.summary[indr,4]+kd[bdir,1]), (river.summary[indr,5]+kd[bdir,2])]
+      }else{
+        bottom0=dem[river.summary[indr,4], river.summary[indr,5]]
+      }
       
       #use this delta from the original dem to adjust the top elevation
-      delta=(top0-bottom0)/(length)
+      delta=max((top0-bottom0)/(length),river.epsilon)
       top=bottom+delta*length
       dem2[river.summary[indr,2], river.summary[indr,3]]=top
       if(printflag==T){
@@ -178,7 +183,7 @@ RiverSmooth=function(dem, direction, mask, river.summary, river.segments, epsilo
         marked.matrix[indx,indy]=marked.matrix[indx,indy]+1
         
         #loop up the hillslope from the point and make sure everything drains
-        drainfix=FixDrainage(dem=dem2, direction=dir2, mask=hillmask, epsilon=epsilon, startpoint=c(indx,indy))
+        drainfix=FixDrainage(dem=dem2, direction=dir2, mask=hillmask, bank.epsilon=bank.epsilon, startpoint=c(indx,indy))
         dem2=drainfix$dem.adj
         #print(paste(indx, indy, round(temp)))
       } #end for i in length river segment
