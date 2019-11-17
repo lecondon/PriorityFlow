@@ -172,7 +172,7 @@ This function requires:
 
 This function will calculate the elevation difference from the start to the end of every  segment and apply a constant delta  along the length of the segment to get from the top to the bottom. Then it will traverse back  up the drainage network checking that in the stream adjustment process no stream cells were raised above their surrounding bank cells using the user specified epsilon value to enforce a difference of at least epsilon between bank and stream cells. IF a bank cell needs to be raised to meet the epsilon threshold the algorithm will continue traversing up the hill slope according to the flow direction file raising cells until every neighboring  cell can drain with the required epsilon criteria. 
 ```{r}
-RivSmooth=RiverSmooth(dem=travHS$dem, travHS$direction, mask=watershed.mask, river.summary=subbasin$summary, river.segments=subbasin$segments, epsilon=5)
+RivSmooth=RiverSmooth(dem=travHS$dem, travHS$direction, mask=watershed.mask, river.summary=subbasin$summary, river.segments=subbasin$segments, bank.epsilon=5)
 ```
 
 *Note: The mask is optional for this function too. A watershed mask only needs to be provided here if the flow directions were only calculated within the mask in Step 1.*
