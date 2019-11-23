@@ -2,9 +2,10 @@
 % Please edit documentation in R/River_Slope.R
 \name{RivSlope}
 \alias{RivSlope}
-\title{Indentify and fix stagnation points}
+\title{Apply minimum slope and secondary scaling to river cells}
 \usage{
-RivSlope(direction, slopex, slopey, minslope, RiverMask)
+RivSlope(direction, slopex, slopey, minslope, RiverMask,
+  Remove.Sec = FALSE)
 }
 \arguments{
 \item{direction}{Nx by ny matrix of flow directions following the following convention (1=down, 2=left, 3=up, 4=right)}
@@ -16,6 +17,8 @@ RivSlope(direction, slopex, slopey, minslope, RiverMask)
 \item{minslope}{Threshold for slope adjustment. Any primary direciton slope for a river cell will be adjusted such that abs(slope)>=minslope}
 
 \item{RiverMask}{Nx by Ny matrix indicating the mask of river cells that the min slope will be applied to.}
+
+\item{Remove.Sec}{Flag, if set to True any secondary outlfows on river cells will be set to zero. Defaults to False.}
 }
 \value{
 This will generate the following outputs:
@@ -26,5 +29,5 @@ This will generate the following outputs:
    - SlopeOutletNew - Nx by ny matrix of the outlet slope for every grid cell after processing
 }
 \description{
-A funtion that will apply a minimum slope threshold for the primary flow direciton along river cells.
+A funtion that will apply a minimum slope threshold for the primary flow direciton along river cells. This function can also limit secondary slopes out of river cells to zero.
 }
