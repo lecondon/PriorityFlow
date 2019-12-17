@@ -57,20 +57,20 @@ for(j in 2:(ny-1)){
           slopeyNew[i,(j-1)]=sign(slopey[i,(j-1)])*minslope
           outdirslope[i,j]=slopey[i,(j-1)]
           outdirslopeNew[i,j]=slopeyNew[i,(j-1)]
-          adj_mask[i,j]=1
+          adj_mask[i,j]=0.5
         } else if(direction[i,j]==2 & abs(slopex[(i-1),j])<minslope){
               slopexNew[(i-1),j]=sign(slopex[(i-1),j])*minslope
               outdirslope[i,j]=slopex[(i-1),j]
               outdirslopeNew[i,j]=slopexNew[(i-1),j]
-              adj_mask[i,j]=1
+              adj_mask[i,j]=0.5
         } else if(direction[i,j]==3 & abs(slopey[i,j])<minslope){
               slopeyNew[i,j]=sign(slopey[i,j])*minslope
               outdirslopeNew[i,j]=slopeyNew[i,j]
-              adj_mask[i,j]=1
+              adj_mask[i,j]=0.5
         }else if(direction[i,j]==4 & abs(slopex[i,j])<minslope){
               slopexNew[i,j]=sign(slopex[i,j])*minslope
               outdirslopeNew[i,j]=slopexNew[i,j]
-              adj_mask[i,j]=1
+              adj_mask[i,j]=0.5
         }
         
         #if Remove.sec is TRUE set any secondary outflow  slopes to 0
