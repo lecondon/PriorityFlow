@@ -84,7 +84,16 @@ for(i in 1:nrow(queue)){
   ytemp=queue[i,2]
   temp=rep(0,4)
   for(d in 1:4){
-    temp[d]=domainmask[xtemp+kd[d,1], ytemp+kd[d,2]]
+    xtest=xtemp+kd[d,1]
+    ytest=ytemp+kd[d,2]
+  
+    #if temp2 falls outside the domain give it a value of 0
+    if(xtest*ytest==0 | xtest>nx | ytest>ny){
+      temp[d]=0
+      }else{
+      #Give it a value of the mask
+      temp[d]=domainmask[xtest, ytest]
+      }
   }
   dtemp=which.min(temp)
   direction[xtemp,ytemp]=kd[dtemp,3]
