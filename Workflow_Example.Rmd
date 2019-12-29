@@ -149,7 +149,7 @@ image.plot(area,main="drainage Area")
 #### Step 2.2: Use a drainage area threshold to define a river network
 Next you can use the flow direction file and the drainage areas to define a river network given a user specified drainage area threshold to define rivers (i.e. any cell with >=riv_th cells draining to it will count as a river)
 ```{r}
-subbasin=CalcSubbasins(travHS$direction, area=area, mask=watershed.mask, riv_th=60, merge_th=10) 
+subbasin=CalcSubbasins(travHS$direction, area=area, mask=watershed.mask, riv_th=60, merge_th=0) 
 ```
 *Note:Try changing the riv_th to change the density of the river network that is created. The merge threshold is used to lump together river segments with drainage areas below this threshold. Use help(CalcSubbasins) to learn more about the options for this function *
 
