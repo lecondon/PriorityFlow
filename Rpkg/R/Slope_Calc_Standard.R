@@ -170,6 +170,18 @@ xmask[rightlist]=-1
 	ylist=which(ymask!=0) #primary flow direction y slope calcs
 	xlist=which(xmask!=0) #primary flow direction x slope calcs
 
+###################################	
+#Do a check to see that slope direcitons are consistent with flow direcitons for primary flows
+	fixPx=which(sign(slopex2)==-1 & xmask==1)
+	    slopex2[fixPx]=abs(slopex2[fixPx])
+	fixNx=which(sign(slopex2)==1 & xmask==-1)
+	    slopex2[fixNx]=-abs(slopex2[fixNx])
+	fixPy=which(sign(slopey2)==-1 & ymask==1)
+	    slopey2[fixPy]=abs(slopey2[fixPy])
+	fixNy=which(sign(slopey2)==1 & ymask==-1)
+	    slopey2[fixNy]=-abs(slopey2[fixNy])
+	Sinklist=c(fixPx, fixNx, fixPy, fixNy)
+	
 ###################################
 #If an lower limit on slopes is set (i.e. minslope is greater than zero)
 # Then  apply the minimum slope threshold to any primary flow direction slope
@@ -239,7 +251,7 @@ nay=which(is.na(slopey2==T))
 slopex2[nax]=0
 slopey2[nay]=0
 
-output_list=list("slopex"=slopex2, "slopey"=slopey2, "direction"=direction)
+output_list=list("slopex"=slopex2, "slopey"=slopey2, "direction"=direction, "Sinks"=Sinklist)
 return(output_list)
 
 } # end function
