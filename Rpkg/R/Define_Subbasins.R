@@ -33,7 +33,8 @@ if(missing(mask)){mask=matrix(1, nrow=nx, ncol=ny)} #default to processing every
 
 #Setup the border
 border=matrix(1, nrow=nx, ncol=ny)
-border[2:(nx-1), 2:(ny-1)]= mask[1:(nx-2), 2:(ny-1)] + 													mask[3:nx, 2:(ny-1)] +
+border[2:(nx-1), 2:(ny-1)]= mask[1:(nx-2), 2:(ny-1)] + 													
+              mask[3:nx, 2:(ny-1)] +
 							mask[2:(nx-1), 1:(ny-2)] +
 							mask[2:(nx-1), 3:ny]
 border=border*mask
@@ -247,6 +248,7 @@ while(nqueue>0){
 
 delete=NULL #list of subbasins to delete from summary list
 if(merge_th>0){
+  print("WARNING: non-zero merge thresholds are not compatible with the RiverSmooth function")
 	nsb=nrow(summary)
 	for(i in 1:nsb){
 		#check if area is less than the threshold & it does not drain externally
