@@ -175,16 +175,23 @@ RiverSmooth=function(dem, direction, mask, river.summary, river.segments, bank.e
         dirtemp=dir2[indx,indy]
         downindx=indx+kd[dirtemp,1]
         downindy=indy+kd[dirtemp,2]
-        dem2[downindx,downindy]=temp
-        
+        if(river.segments[downindx,downindy]==r){
+          dem2[downindx,downindy]=temp
+          marked.matrix[downindx,downindy]=marked.matrix[downindx,downindy]+1
+          #loop up the hillslope from the point and make sure everything drains
+          drainfix=FixDrainage(dem=dem2, direction=dir2, mask=hillmask, bank.epsilon=bank.epsilon, startpoint=c(downindx,downindy))
+          dem2=drainfix$dem.adj
+        }else{
+          print(paste("Warnig: Check Segmennt for  branches", r))
+        }
+       
+        #print(paste(downindx,  downindy, temp))
         #move to the downstream point
         indx=downindx
         indy=downindy
-        marked.matrix[indx,indy]=marked.matrix[indx,indy]+1
         
-        #loop up the hillslope from the point and make sure everything drains
-        drainfix=FixDrainage(dem=dem2, direction=dir2, mask=hillmask, bank.epsilon=bank.epsilon, startpoint=c(indx,indy))
-        dem2=drainfix$dem.adj
+        
+
         #print(paste(indx, indy, round(temp)))
       } #end for i in length river segment
     } # end if length >1
