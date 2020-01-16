@@ -189,7 +189,7 @@ if(nqueue>1){
 		queue1=rbind(queue2, queuetemp)
 		queuetemp=NULL
 		queue2=NULL
-		th=max(dem)*1.1
+		th=max(dem[mask==1])*1.1
 		nqueue=length(queue1)/3
 		q1max=0
 		nqueue2=0
