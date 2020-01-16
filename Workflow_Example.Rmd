@@ -172,7 +172,7 @@ This function requires:
 
 This function will calculate the elevation difference from the start to the end of every  segment and apply a constant delta  along the length of the segment to get from the top to the bottom. Then it will traverse back  up the drainage network checking that in the stream adjustment process no stream cells were raised above their surrounding bank cells using the user specified epsilon value to enforce a difference of at least epsilon between bank and stream cells. IF a bank cell needs to be raised to meet the epsilon threshold the algorithm will continue traversing up the hill slope according to the flow direction file raising cells until every neighboring  cell can drain with the required epsilon criteria. 
 ```{r}
-RivSmooth=RiverSmooth(dem=travHS$dem, travHS$direction, mask=watershed.mask, river.summary=subbasin$summary, river.segments=subbasin$segments, bank.epsilon=5)
+RivSmooth=RiverSmooth(dem=travHS$dem, travHS$direction, mask=watershed.mask, river.summary=subbasin$summary, river.segments=subbasin$segments, bank.epsilon=1)
 ```
 
 *Note: The mask is optional for this function too. A watershed mask only needs to be provided here if the flow directions were only calculated within the mask in Step 1.*
@@ -242,6 +242,7 @@ par(mfrow=c(1,2))
 
 
 ## Step 3: Calculate the slopes
+## 3.1 Calculate the slopes for the entire domain 
 Once you have the DEM how you want it you can calculate the slopes for use in ParFlow. Here I am using the *SlopeCalcStan* function which does not do any downwinding and is intended for use with the **OverlandKinematic** or **OverlandDiffusive** boundary conditions in ParFlow. If you are using the **OverlandFlow** boundary condition you should use the *SlopeCalcUP* function documented in the  Downwinding_Workflow_Examples.
 
 The mandatory inputs for this function are:
@@ -260,6 +261,16 @@ The following optional inputs are also being used here (refer to the help("Slope
 slopesCalc=SlopeCalStan(dem=RivSmooth$dem.adj, mask=watershed.mask, direction=travHS$direction, minslope=1e-5, maxslope=1, dx=1000, dy=1000, secondaryTH=-1) 
 ```
 
+## 3.2 Optional - Adjust the slopes along the river cells
+This function allows you to provide an alternate min slope for the primary directions of river cells than was used in the previous step
+Also with this function you can remove and seconary slopes (i.e. slopes normal to the primary direciton of flow) that would lead to additional outflow directions in river cells (Remove.Sec=TRUE)
+```{r}
+river.mask=subbasin$segments
+river.mask[river.mask>0]=1
+slopesCalc2=RivSlope(direction=travHS$direction, slopex=slopesCalc$slopex, slopey=slopesCalc$slopey, minslope=1e-4, RiverMask=watershed.mask, Remove.Sec=TRUE)
+```
+
+
 Plotting the resulting slopes
 ```{r}
 slopex=slopesCalc$slopex
@@ -275,6 +286,7 @@ par(mfrow=c(1,2))
 image.plot(sxplot)
 image.plot(syplot) 
 ```
+
 
 
 ## Step 4: Write slope files out in ParFlow ascii format
