@@ -273,8 +273,8 @@ slopesCalc2=RivSlope(direction=travHS$direction, slopex=slopesCalc$slopex, slope
 
 Plotting the resulting slopes
 ```{r}
-slopex=slopesCalc$slopex
-slopey=slopesCalc$slopey
+slopex=slopesCalc2$slopex
+slopey=slopesCalc2$slopey
 
 sxplot=slopex
 sxplot[which(slopex==0)]=NA
