@@ -7,7 +7,7 @@
 #' Note: if no init mask is included every border cell will be added to the queue
 #' @param domainmask Mask of the domain extent to be considered. If no domain mask is provided boundaries will be calcualted from the rectangular extent
 #' @param border Alternatively you can input your own border rathern than having it be calculated from the domain mask. For example if you want to have the river network and the borders combined you can input this as a border.
-#' @return This function returns three outputs: "basins"=basin, "direction"=direction
+#' @return This function returns five outputs:
 #' @return 1.marked - A matrix indicating the outlet cells that were identified (1=outlet, 0=not outlet)
 #' @return 2.queue - A list of the outlet cells. This has three columns: x, y, elevation 
 #' This mask should match the river reach mask you provide the function if all cells were appropriately processed. 
