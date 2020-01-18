@@ -19,7 +19,7 @@ Note: if no init mask is included every border cell will be added to the queue}
 \item{d4}{directional numbering system: the numbers you want to assigne to down, left, top,right (defaults to 1,2,3,4)}
 }
 \value{
-This function returns three outputs: "basins"=basin, "direction"=direction
+This function returns five outputs:
 
 1.marked - A matrix indicating the outlet cells that were identified (1=outlet, 0=not outlet)
 
