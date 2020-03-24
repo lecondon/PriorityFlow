@@ -237,7 +237,7 @@ if(secondaryTH>=0){
 # a cell is only flat if all 4 faces of the cell are flat
 #flattest=matrix(0, ncol=ny, nrow=nx)
 flattest=abs(slopex2[2:nx,2:ny])+abs(slopex2[1:(nx-1),2:ny])+abs(slopey2[2:nx,2:ny])+abs(slopey2[2:nx,1:(ny-1)])
-nflat=length(which(flattest==0))
+nflat=length(which(flattest==0 & mask[2:nx, 2:ny]))
 flats=which(flattest==0, arr.ind=T)+1
 if(nflat>0){
   print(paste("WARNING:", nflat, "Flat cells found"))
