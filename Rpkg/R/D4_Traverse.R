@@ -4,7 +4,6 @@
 #' in a river mask. Where no D4 neigbhors exist it looks for d8 neigbors
 #' and created d4 bridges to these diagonal cells
 
-
 #' @param dem Elevation matrix
 #' @param queue a priority queue to start from three columns, x, y, elevation
 #' @param marked a matrix of which cells have been marked already
