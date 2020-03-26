@@ -1,6 +1,10 @@
 #' Calculate Overland Flow
 #' 
-#' Function to calculate overland flow from ParFlow pressure file outputs
+#' Function to calculate overland flow from ParFlow pressure file outputs. This function will write three pfb outputs 
+#' for every timestep (1) outflow - this is the volumetric outflow from each grid cell [l3/t], (2) q_east - the 
+#' volumetric flow across the east face of each cell (Note: this will have dimensions nx+1, ny to account for the western edge
+#' of the domain) (2) q_north - the volumetric flow across the north face of each cell (Note this will have dimensions nx, ny+1
+#'  to account for the southern edge of the domain)
 #' @param file.path path where pressure and slope files are located, this is also where flow files will be written to
 #' @param run.name ParFlow run name this is used to read the pressure files assumign they are named with the
 #'         standard ParFlow naming convention (i.e. runname.out.press.00000.pfb)
