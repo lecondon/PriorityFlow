@@ -157,16 +157,20 @@ ymask=xmask=matrix(0, nrow=nx, ncol=ny)
 # signs indicate sign of the slope consistent - i.e. for flow in the positive x direciton (right) you need a negative slope
 ymask[uplist]=-1
 xmask[rightlist]=-1
-  for(ii in 1:nrow(leftlist.arr)){
-	  xindex=max((leftlist.arr[ii,1]-1),1) #max statment means that if you have a left facing cell on the left border of the domain keep the slope at [i] as primary
-	  if(mask[xindex, leftlist.arr[ii,2]]==0){xindex=xindex+1} #if the left cell falls outside the mask use the current cell for this border
-	   xmask[xindex, leftlist.arr[ii,2]]=1
-	}
-	for(ii in 1:nrow(downlist.arr)){
-	  yindex=max((downlist.arr[ii,2]-1),1) #max statment means that if you have a down facing cell on the lower border of the domain keep the slope at [i] as primary
-	  if(mask[downlist.arr[ii,1],yindex]==0){yindex=yindex+1} #if the lower cell falls outside the mask use the current cell for this border
-	  ymask[downlist.arr[ii,1], yindex]=1
-	}
+  if(length(leftlist.arr>0)){
+    for(ii in 1:nrow(leftlist.arr)){
+	    xindex=max((leftlist.arr[ii,1]-1),1) #max statment means that if you have a left facing cell on the left border of the domain keep the slope at [i] as primary
+	    if(mask[xindex, leftlist.arr[ii,2]]==0){xindex=xindex+1} #if the left cell falls outside the mask use the current cell for this border
+	     xmask[xindex, leftlist.arr[ii,2]]=1
+    }
+  }
+  if(length(downlist.arr>0)){
+	  for(ii in 1:nrow(downlist.arr)){
+	    yindex=max((downlist.arr[ii,2]-1),1) #max statment means that if you have a down facing cell on the lower border of the domain keep the slope at [i] as primary
+	    if(mask[downlist.arr[ii,1],yindex]==0){yindex=yindex+1} #if the lower cell falls outside the mask use the current cell for this border
+	    ymask[downlist.arr[ii,1], yindex]=1
+	  }
+  }
 	ylist=which(ymask!=0) #primary flow direction y slope calcs
 	xlist=which(xmask!=0) #primary flow direction x slope calcs
 
