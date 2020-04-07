@@ -122,7 +122,7 @@ for(f in 1:nfile){
     fill.down2=fill.down
     fill.down2[,2]=fill.down[,2]+1
     #pad the slopes to below  with their neigboring cells in the mask 
-    slopey[fill.down]=slopex[fill.down2]
+    slopey[fill.down]=slopey[fill.down2]
     
     
     ####
