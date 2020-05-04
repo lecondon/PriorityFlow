@@ -76,7 +76,7 @@ CalcStreamOrder=function(basinID,dsID,segments){
       blist2=which(segments2==btemp)
       segments[blist2]=order_no[i]
     }
-    outputlist=list("summary"=summary, "channel_orders"=segments)
+    outputlist=list("summary"=summary, "order_mask"=segments)
   }
   
   return(outputlist)
