@@ -268,7 +268,7 @@ if(merge_th>0){
 			#adjust the summary matrix for the downstream basin
 			#increment the downstream basins drainage area
 			summary[which(summary[,1]==bas2),7]=summary[which(summary[,1]==bas2),7] + summary[i,7] 
-			#change the locaiton of the downtream basins headwater cell
+			#change the location of the downtream basins headwater cell
 			summary[which(summary[,1]==bas2),2]=summary[i,2]
 			summary[which(summary[,1]==bas2),3]=summary[i,3]
 

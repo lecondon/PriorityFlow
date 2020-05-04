@@ -1,15 +1,16 @@
-#' Defining Stream order
+#' Calculate Stream order
 #' 
 #' Function to calculate Strahler stream orers using stream segments delineated using the CalcSubbasins Function
-#' @param basinID a column list of basin IDs
-#' @param dsID downstream basin IDs, the downstream ID of each basin, should be correpsonding to the basin ID
+#' @param basinID a column list of basin IDs (can be obtained from the CalcSubbasins function Summary output column 1 "Basin_ID")
+#' @param dsID downstream basin IDs, the downstream ID of each basin, should be correpsonding to the basin ID 
+#' (can be obtained from the CalcSubbasins function Summary output Column 6 "Downstream_Basin_ID")
 #' @param segments (optional) a channel mask with segments assigned with basin IDs 
-#' if PriorityFlow is used to generate subbasins, all inputs can be obtained with function CalcSubbasins in PriporityFlow.
+#' (can use the CalcSubbasins 'segments' output for this).
 #' 
 #' @return summary - A summary table with a row for every basin with three columns "Basin_ID" ""Downstream_ID" "StreamOrder_number"
-#' @return channel_orders (optional)- only available if segments is an input,this will output a spatial map with the channel orders
+#' @return order_mask (optional)- only available if segments is an input,this will output a spatial raster with the channel orders
 #' @export
-CalStreamOrder=function(basinID,dsID,segments){
+CalcStreamOrder=function(basinID,dsID,segments){
 
   order_no=array(0,c(length(basinID),1))
   
