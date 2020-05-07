@@ -21,8 +21,7 @@
 #' @param  mask mask with ones for cells to be processed and zeros for everything else - defaults to a mask of all 1's
 #'       if a mask is a provide it shoudl be a [nx,ny] matrix such that such that [1,1] is the lower left corner of the 
 #'       domain and [nx,ny] is the upper right
-#'       
-#'       
+#' @export    
 CalcFlow=function(file.path, run.name, file.nums, slopex.file,
                   slopey.file, overland.type, mannings, epsilon=1e-5,
                   dx=1, dy=1, mask){
