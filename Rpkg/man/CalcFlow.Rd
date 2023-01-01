@@ -4,8 +4,19 @@
 \alias{CalcFlow}
 \title{Calculate Overland Flow}
 \usage{
-CalcFlow(file.path, run.name, file.nums, slopex.file, slopey.file,
-  overland.type, mannings, epsilon = 1e-05, dx = 1, dy = 1, mask)
+CalcFlow(
+  file.path,
+  run.name,
+  file.nums,
+  slopex.file,
+  slopey.file,
+  overland.type,
+  mannings,
+  epsilon = 1e-05,
+  dx = 1,
+  dy = 1,
+  mask
+)
 }
 \arguments{
 \item{file.path}{path where pressure and slope files are located, this is also where flow files will be written to}

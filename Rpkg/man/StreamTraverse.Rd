@@ -4,8 +4,18 @@
 \alias{StreamTraverse}
 \title{DEM processing of stream networks}
 \usage{
-StreamTraverse(dem, mask, queue, marked, step, direction, basins,
-  d4 = c(1, 2, 3, 4), printstep = F, epsilon = 0)
+StreamTraverse(
+  dem,
+  mask,
+  queue,
+  marked,
+  step,
+  direction,
+  basins,
+  d4 = c(1, 2, 3, 4),
+  printstep = F,
+  epsilon = 0
+)
 }
 \arguments{
 \item{dem}{Elevation matrix}

@@ -4,8 +4,10 @@
 \name{river.mask}
 \alias{river.mask}
 \title{River Mask}
-\format{a matrix of 0's and 1' showing the location of the river cells (1=river, 0=nonriver), where nrow=nx
-and ncol=ny for the domain.}
+\format{
+a matrix of 0's and 1' showing the location of the river cells (1=river, 0=nonriver), where nrow=nx
+and ncol=ny for the domain.
+}
 \usage{
 river.mask
 }

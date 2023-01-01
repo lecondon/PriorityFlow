@@ -4,8 +4,7 @@
 \alias{FixDrainage}
 \title{Walk upstream from a point ensuring DEM is increasing by a minum epsilon}
 \usage{
-FixDrainage(dem, direction, mask, bank.epsilon, startpoint, d4 = c(1, 2,
-  3, 4))
+FixDrainage(dem, direction, mask, bank.epsilon, startpoint, d4 = c(1, 2, 3, 4))
 }
 \arguments{
 \item{dem}{Elevation matrix}

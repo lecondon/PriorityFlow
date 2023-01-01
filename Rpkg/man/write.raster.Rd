@@ -4,8 +4,7 @@
 \alias{write.raster}
 \title{Write raster text file for ArcGIS}
 \usage{
-write.raster(data, fout, xllcorner = 0, yllcorner = 0, dx = 1000,
-  naval = -999)
+write.raster(data, fout, xllcorner = 0, yllcorner = 0, dx = 1000, naval = -999)
 }
 \arguments{
 \item{data}{Matrix of values for the raster}

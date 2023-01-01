@@ -4,8 +4,9 @@ Title: Toolkit for topographic processing for hydrologic models
 Version: 1.0
 Date: 2019-05-21
 Author: Laura Condon & Reed Maxwell
-Maintainer: Laura Condon <lecondon@email.arizona.edu>
+Maintainer: Laura Condon <lecondon@arizona.edu>
 Description: An R package for processing topography for hydrologic modeling. 
 License: GNU General Public License
 LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.2.3
+Encoding: UTF-8

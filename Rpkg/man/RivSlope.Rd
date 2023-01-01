@@ -4,8 +4,7 @@
 \alias{RivSlope}
 \title{Apply minimum slope and secondary scaling to river cells}
 \usage{
-RivSlope(direction, slopex, slopey, minslope, RiverMask,
-  Remove.Sec = FALSE)
+RivSlope(direction, slopex, slopey, minslope, RiverMask, Remove.Sec = FALSE)
 }
 \arguments{
 \item{direction}{Nx by ny matrix of flow directions following the following convention (1=down, 2=left, 3=up, 4=right)}

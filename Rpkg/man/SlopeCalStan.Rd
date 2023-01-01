@@ -4,8 +4,18 @@
 \alias{SlopeCalStan}
 \title{Calculate the slopes from a DEM}
 \usage{
-SlopeCalStan(dem, direction, dx, dy, mask, d4 = c(1, 2, 3, 4),
-  minslope = 0, maxslope = -1, secondaryTH = -1, printflag = F)
+SlopeCalStan(
+  dem,
+  direction,
+  dx,
+  dy,
+  mask,
+  d4 = c(1, 2, 3, 4),
+  minslope = 0,
+  maxslope = -1,
+  secondaryTH = -1,
+  printflag = F
+)
 }
 \arguments{
 \item{dem}{Elevation matrix}

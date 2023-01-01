@@ -4,8 +4,10 @@
 \name{watershed.mask}
 \alias{watershed.mask}
 \title{Watershed Mask}
-\format{a matrix of 0's and 1' showing the watershed extent (1=inside the watershed, 0=outside the watershed), 
-where nrow=nx and ncol=ny for the domain.}
+\format{
+a matrix of 0's and 1' showing the watershed extent (1=inside the watershed, 0=outside the watershed), 
+where nrow=nx and ncol=ny for the domain.
+}
 \usage{
 watershed.mask
 }

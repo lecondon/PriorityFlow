@@ -4,10 +4,25 @@
 \alias{SlopeCalcUP}
 \title{Calculate the slopes from a DEM}
 \usage{
-SlopeCalcUP(dem, direction, dx, dy, mask, borders, borderdir = 1,
-  d4 = c(1, 2, 3, 4), minslope = 1e-05, maxslope = -1,
-  secondaryTH = -1, river_method = 0, river_secondaryTH = 0,
-  rivermask, subbasins, printflag = F, upflag = T)
+SlopeCalcUP(
+  dem,
+  direction,
+  dx,
+  dy,
+  mask,
+  borders,
+  borderdir = 1,
+  d4 = c(1, 2, 3, 4),
+  minslope = 1e-05,
+  maxslope = -1,
+  secondaryTH = -1,
+  river_method = 0,
+  river_secondaryTH = 0,
+  rivermask,
+  subbasins,
+  printflag = F,
+  upflag = T
+)
 }
 \arguments{
 \item{dem}{Elevation matrix}

@@ -4,7 +4,9 @@
 \name{DEM}
 \alias{DEM}
 \title{Example watershed DEM for PrioirtyFlow}
-\format{a matrix of elevaiton values with nrow=nx and ncol=ny dimensions of the domain}
+\format{
+a matrix of elevaiton values with nrow=nx and ncol=ny dimensions of the domain
+}
 \usage{
 data(DEM)
 }

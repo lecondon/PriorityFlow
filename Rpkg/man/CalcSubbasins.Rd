@@ -4,8 +4,15 @@
 \alias{CalcSubbasins}
 \title{Defining Subbasins}
 \usage{
-CalcSubbasins(direction, area, mask, d4 = c(1, 2, 3, 4), riv_th = 50,
-  printflag = F, merge_th = 0)
+CalcSubbasins(
+  direction,
+  area,
+  mask,
+  d4 = c(1, 2, 3, 4),
+  riv_th = 50,
+  printflag = F,
+  merge_th = 0
+)
 }
 \arguments{
 \item{direction}{a matrix of the flow directions for cells that have been processed - defaults to all zeros}
@@ -18,7 +25,7 @@ CalcSubbasins(direction, area, mask, d4 = c(1, 2, 3, 4), riv_th = 50,
 
 \item{riv_th}{threshold for the drainage area minimum used desigate cells as river cells, defaults to 50}
 
-\item{printflag}{optional flag to print function progress}
+\item{printflag}{optional flag to print function progress. this is a test}
 
 \item{merge_th}{after all the subbasins have been defined subbasins with areas <merg_th will be combined with their downstream neighbors (Defaults to 0 which means no merging will take place)}
 }

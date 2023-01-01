@@ -4,9 +4,20 @@
 \alias{D4TraverseB}
 \title{Priority flow processing of D4 Stream Networks}
 \usage{
-D4TraverseB(dem, queue, marked, mask, step, direction, basins, d4 = c(1,
-  2, 3, 4), printstep = F, nchunk = 100, epsilon = 0,
-  printflag = F)
+D4TraverseB(
+  dem,
+  queue,
+  marked,
+  mask,
+  step,
+  direction,
+  basins,
+  d4 = c(1, 2, 3, 4),
+  printstep = F,
+  nchunk = 100,
+  epsilon = 0,
+  printflag = F
+)
 }
 \arguments{
 \item{dem}{Elevation matrix}
@@ -31,7 +42,7 @@ D4TraverseB(dem, queue, marked, mask, step, direction, basins, d4 = c(1,
 
 \item{epsilon}{amount to add to filled areas to avoid creating flats, defaults to zero}
 
-\item{printflag}{optional flag to print function progress}
+\item{printflag}{optional flag to print function progress. this is a test}
 }
 \description{
 'D4TraverB'  will process stream all network cells walking upstream on d4 neigbors
