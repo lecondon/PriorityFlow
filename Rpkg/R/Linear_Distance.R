@@ -5,9 +5,10 @@
 #' @inheritParams D4TraverseB
 #' @param  target_points The matrix with a value of 1 for all cells that you would like to calculate the distance to and 0 for all other cells
 #' @param  cell_size The size of a grid cell (**NOTE that this function assumes dx=dy, i.e. square grid cells)
+#' @param  max_dist Maximum distance to check. All cells with no distance found <= max_dist will be assigned max_dist
 #' @export
 
-LinDist=function(target_points, mask, cell_size=1, printflag=F){
+LinDist=function(target_points, mask, cell_size=1, max_dist = Inf, printflag=F){
 
 nx=nrow(target_points)
 ny=ncol(target_points)
@@ -20,13 +21,29 @@ incomplete = (1-target_points)*mask
 
 n_missing = sum(incomplete)
 distance=matrix(0, nrow=nx, ncol=ny)
-s=1
 
-while (n_missing>0 & s<max(nx,ny)){
-  print(paste("Step=", s, "N_missing=", n_missing))
+#Figure out the order of steps (horizontal an vertical) and rotations (distance from horizontal and vertical) to check
+#if max dist is unspecified check out to the total size of the domain
+order=c(0,0,0)
+for(s in 1:max(nx,ny)){
   for(r in 0:s){
-      d_temp = ((s*cell_size)^2+(r*cell_size)^2)^(0.5)
-      print(paste("Rotation=", r, "N_missing=", n_missing, "distance=", d_temp))
+    order=rbind(order, c(s,r,sqrt((r*cell_size)^2+(s*cell_size)^2)))
+  }
+}
+order=order[-1,]
+sort_order=sort(order[,3], index.return=T)$ix
+order = order[sort_order,]
+order=order[order[,3]<=max_dist,] #orderd list of steps, rotations and distances
+ndist=nrow(order)  #number of unique distances to test
+prtin("Orders created")
+
+while (n_missing>0){
+  for(d in 1:ndist){
+      s=order[d,1]
+      r=order[d,2]
+      d_temp=order[d,3]
+      #d_temp = ((s*cell_size)^2+(r*cell_size)^2)^(0.5)
+      #print(paste("Step=", s,  "Rotation=", r, "N_missing=", n_missing, "distance=", d_temp))
       #counting up the number of target points within a given step (s= later distance from center) and rotation (r=distance off vertical or horizonatl axes)
       temp_count = matrix(0, nrow=nx, ncol=ny)
       if(s<nx & r<ny){
@@ -55,9 +72,9 @@ while (n_missing>0 & s<max(nx,ny)){
        
        #stop if you ar out of missing cells
        if(n_missing==0){break}
-  } #end for rotation
-  s = s+1
+  } #end for d
 } #end while
+print("distance Calculated")
 distance[mask==0]=NA
 
 return(distance)
