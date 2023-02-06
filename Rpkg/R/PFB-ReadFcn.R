@@ -4,97 +4,50 @@
 #' @param filename Name of file to read
 #' @param verbose Optional to turn on print statement
 #' @export 
-readpfb=function(filename, verbose){
+readpfb = function(filename, verbose = FALSE){
 
+  # Code to read parflow binary in R
+  # RMM 10-19-13
+  # JSAT 02-06-2023
 
-# code to read parflow binary in R
-# RMM 10-19-13
+  to.read = file(filename, "rb")
+  on.exit(close(to.read))
+  if(verbose){print(to.read)}
+	
+  # Read in X0, Y0, and Z0 of domain
+  xyz = readBin(to.read, what = "double", n = 3, endian = "big")
+  if (verbose){names(xyz) = c("X0", "Y0", "Z0"); print(xyz)}
 
-to.read = file(filename,"rb")
-on.exit(close(to.read))
-if(verbose){print(to.read)}
-#read in X0, Y0, Z0 of domain
-X = readBin(to.read,double(),endian="big")
-Y = readBin(to.read,double(),endian="big")
-Z = readBin(to.read,double(),endian="big")
+  # Read in global NX, NY, and NZ of domain
+  nxnynz = readBin(to.read, what = "integer", n = 3, endian = "big")
+  if (verbose){names(nxnynz) = c("NX", "NY", "NZ"); print(nxnynz)}
 
-if(verbose){
-print(X)
-print(Y)
-print(Z)
-}
+  # Set up a blank array with the size of the domain
+  data = array(0, dim = c(nxnynz[1], nxnynz[2], nxnynz[3]))
 
-#read in global nx, ny, nz of domain
-nx = readBin(to.read,integer(),endian="big")
-ny = readBin(to.read,integer(),endian="big")
-nz = readBin(to.read,integer(),endian="big")
-
-# set up a blank array the size of the domain
-Data = array(0,dim=c(nx,ny,nz))
-
-if(verbose){
-print(nx)
-print(ny)
-print(nz)
-}
-
-#read in dx dy dz
-dx = readBin(to.read,double(),endian="big")
-dy = readBin(to.read,double(),endian="big")
-dz = readBin(to.read,double(),endian="big")
-
-if(verbose){
-print(dx)
-print(dy)
-print(dz)
-}
-# read in number of subgrids
-is = readBin(to.read,integer(),endian="big")
-
-if(verbose){print(is)}
-#loop over each subgrid to grab data
-
-for (i in 1:is ) {
-#read in local starting points ix, iy, iz of this subgrid
-ix = readBin(to.read,integer(),endian="big")
-iy = readBin(to.read,integer(),endian="big")
-iz = readBin(to.read,integer(),endian="big")
-
-if(verbose){
-print(ix)
-print(iy)
-print(iz)
-}
-
-#read in locall nx, ny, nz of this subgrid
-nnx = readBin(to.read,integer(),endian="big")
-nny = readBin(to.read,integer(),endian="big")
-nnz = readBin(to.read,integer(),endian="big")
-
-if(verbose){
-print(nnx)
-print(nny)
-print(nnz)
-}
-
-#read in local refinement of this subgridr
-rx = readBin(to.read,integer(),endian="big")
-ry = readBin(to.read,integer(),endian="big")
-rz = readBin(to.read,integer(),endian="big")
-
-if(verbose){
-print(rx)
-print(ry)
-print(rz)
-}
-
-for (k in (iz+1):(iz+nnz))  {
-   for (j in (iy+1):(iy+nny))  {	
-	for (i in (ix+1):(ix+nnx))  {
-	Data[i,j,k] = readBin(to.read,double(),endian="big")
-    }
-   }
+  # Read in DX, DY, and DZ
+  dxdydz = readBin(to.read, what = "double", n = 3, endian = "big")
+  if (verbose){names(dxdydz) = c("DX", "DY", "DZ"); print(dxdydz)}
+	
+  # Read in number of subgrids
+  nsgs = readBin(to.read, what = "integer", n = 1, endian = "big")
+  if (verbose){names(nsgs) = c("SUBGRIDS"); print(nsgs)}
+  
+  for (sg in 1:nsgs) {
+    
+    # Read in subgrid parameters: local starting points, local NX, NY, and NZ, subgrid refinement
+    sgpar = readBin(to.read, what = "integer", n = 9, endian = "big")
+    if (verbose){names(sgpar) = c("IX", "IY", "IZ", "NNX", "NNY", "NNZ", "RX", "RY", "RZ"); print(sgpar)}
+    nr = sgpar[4] * sgpar[5] * sgpar[6]
+    
+    # Read in subgrid data
+    x_inds = (sgpar[1] + 1):(sgpar[1] + sgpar[4])
+    y_inds = (sgpar[2] + 1):(sgpar[2] + sgpar[5])
+    z_inds = (sgpar[3] + 1):(sgpar[3] + sgpar[6])
+    inds = as.matrix(expand.grid(x_inds, y_inds, z_inds))
+    data[inds] = readBin(to.read, what = "double", n = nr, endian="big")
+    
   }
-}
-return(Data)
+  return(data)
+
 }
