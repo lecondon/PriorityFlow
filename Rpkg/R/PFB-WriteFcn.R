@@ -70,7 +70,7 @@ writepfb=function(to.write,filename,dx,dy,dz){
   writeBin(rz,fp,integer(),endian="big")
   
   # aa=as.vector(as.double(a))
-  aa=as.vector(to.write)
+  aa=as.double(as.vector(to.write))
   writeBin(aa,fp,double(),endian="big")
   
   close(fp)
